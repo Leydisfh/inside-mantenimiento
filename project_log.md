@@ -306,6 +306,25 @@ Pendiente:
 Implementar cámara y almacenamiento.
 
 ---
+## Almacenamiento de resultados por equipo
+
+Al finalizar un mantenimiento, cada equipo conserva:
+
+- Categoría
+- Modelo
+- Código interno
+- Número de serie
+- Técnico
+- Estado
+- Checklist completo
+- Observaciones de fallas
+- Diagnóstico final
+- Repuesto necesario
+- Recomendación
+- Prioridad
+- Fecha de finalización
+
+Estos datos serán utilizados posteriormente para generar el informe PDF de la orden.
 
 # Próximas etapas
 
@@ -322,3 +341,4 @@ Implementar cámara y almacenamiento.
 11. Eliminación automática de servicios después de 30 días.
 12. Convertir aplicación en PWA.
 13. Publicación.
+

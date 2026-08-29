@@ -182,10 +182,15 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({
   }
 
   // Si ya fue terminado, no permitimos modificarlo.
-  if (equipo.estado === "Completado") {
-    alert("Este equipo ya fue completado.");
-    return;
-  }
+ if (equipo.estado === "Completado") {
+  console.log("RESULTADO COMPLETO DEL EQUIPO:", equipo);
+
+  alert(
+    "Este equipo ya fue completado. El resultado está guardado."
+  );
+
+  return;
+}
 
   let equipoActualizado = equipo;
 
@@ -220,22 +225,34 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({
 };
 
 const finalizarDiagnostico = (datosDiagnostico) => {
-  setDiagnosticoActual(datosDiagnostico);
-
   actualizarEquiposOrden((equiposActuales) =>
     equiposActuales.map((equipo) =>
       equipo.id === equipoSeleccionado.id
         ? {
             ...equipo,
+
             estado: "Completado",
+
             tecnico:
               nombreTecnico || "Administrador",
+
+            checklist: checklistActual,
+
+            diagnostico: datosDiagnostico,
+
+            fechaFinalizacion:
+              new Date().toISOString(),
           }
         : equipo
     )
   );
 
+  setDiagnosticoActual(datosDiagnostico);
+
   alert("Resultado guardado correctamente.");
+
+  setEquipoSeleccionado(null);
+  setChecklistActual(null);
 
   setPantalla("equipos");
 };
