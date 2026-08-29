@@ -1,0 +1,148 @@
+/* =========================
+   DIAGNÓSTICO FINAL
+========================= */
+
+.diagnosis-page {
+  padding-bottom: 40px;
+}
+
+.diagnosis-section {
+  margin-top: 20px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 14px;
+}
+
+.diagnosis-section h3 {
+  margin: 0 0 14px;
+  color: #10294b;
+  font-size: 16px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.status-choice {
+  min-height: 92px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #d6e0ea;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #53657c;
+  font-size: 20px;
+}
+
+.status-choice span {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.status-choice.operational.selected {
+  background: #e7f7f2;
+  border: 2px solid #0d9b7d;
+  color: #087c67;
+}
+
+.status-choice.observations.selected {
+  background: #fff6e5;
+  border: 2px solid #d98d11;
+  color: #a66a00;
+}
+
+.status-choice.repair.selected {
+  background: #fff0e8;
+  border: 2px solid #e0752b;
+  color: #b65318;
+}
+
+.status-choice.out.selected {
+  background: #fdecea;
+  border: 2px solid #d83b32;
+  color: #b72c25;
+}
+
+.diagnosis-field {
+  margin-bottom: 17px;
+}
+
+.diagnosis-field:last-child {
+  margin-bottom: 0;
+}
+
+.diagnosis-field label {
+  display: block;
+  margin-bottom: 7px;
+  color: #3c4d65;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.diagnosis-field input,
+.diagnosis-field textarea,
+.diagnosis-field select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cad5e2;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #14243b;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.diagnosis-field textarea {
+  min-height: 85px;
+  resize: vertical;
+}
+
+.diagnosis-field input:focus,
+.diagnosis-field textarea:focus,
+.diagnosis-field select:focus {
+  border-color: #0b63e5;
+}
+
+.photos-title h3 {
+  margin-bottom: 2px;
+}
+
+.photos-title p {
+  margin: 0 0 12px;
+  color: #8995a6;
+  font-size: 11px;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+
+.photo-placeholder {
+  min-height: 95px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 7px;
+  border: 1px dashed #aebed1;
+  border-radius: 12px;
+  background: #f8fbff;
+  color: #64748b;
+  font-size: 20px;
+}
+
+.photo-placeholder span {
+  font-size: 11px;
+  font-weight: 700;
+}

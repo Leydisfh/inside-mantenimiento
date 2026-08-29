@@ -1,0 +1,365 @@
+import { useState } from "react";
+import "./App.css";
+import Login from "./pages/Login";
+import Ordenes from "./pages/Ordenes";
+import Equipos from "./pages/Equipos";
+import Checklist from "./pages/Checklist";
+import Diagnostico from "./pages/Diagnostico";
+import NuevaOrden from "./pages/NuevaOrden";
+
+function App() {
+  const [pantalla, setPantalla] = useState("login");
+  const [tipoAcceso, setTipoAcceso] = useState("tecnico");
+  const [pin, setPin] = useState("");
+  const [nombreTecnico, setNombreTecnico] = useState("");
+  const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
+  const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
+  const [checklistActual, setChecklistActual] = useState(null);
+  const [diagnosticoActual, setDiagnosticoActual] = useState(null);
+
+  const [ordenes, setOrdenes] = useState([
+    {
+      numero: "COCH-2026-0001",
+      cliente: "Cochez",
+      ubicacion: "CEDI Central",
+      equipos: 48,
+      progreso: 62,
+      estado: "En proceso",
+    },
+    {
+      numero: "FELIX-2026-0002",
+      cliente: "Félix B. Maduro",
+      ubicacion: "Albrook",
+      equipos: 14,
+      progreso: 100,
+      estado: "Cerrado",
+    },
+    {
+      numero: "DHL-2026-0003",
+      cliente: "DHL",
+      ubicacion: "Panamá Pacífico",
+      equipos: 22,
+      progreso: 18,
+      estado: "En proceso",
+    },
+  ]);
+
+const [equiposPorOrden, setEquiposPorOrden] = useState({
+  "COCH-2026-0001": [
+    {
+      id: 1,
+      modelo: "Zebra MC330L",
+      serial: "MC330L-001",
+      tecnico: "Jaime",
+      estado: "Completado",
+    },
+    {
+      id: 2,
+      modelo: "Zebra MC330L",
+      serial: "MC330L-002",
+      tecnico: "Ana",
+      estado: "En proceso",
+    },
+    {
+      id: 3,
+      modelo: "Zebra MC330L",
+      serial: "MC330L-003",
+      tecnico: "",
+      estado: "Pendiente",
+    },
+    {
+      id: 4,
+      modelo: "Zebra TC22",
+      serial: "TC22-001",
+      tecnico: "",
+      estado: "Pendiente",
+    },
+    {
+      id: 5,
+      modelo: "Zebra TC22",
+      serial: "TC22-002",
+      tecnico: "Luis",
+      estado: "En proceso",
+    },
+    {
+      id: 6,
+      modelo: "Zebra RFD40",
+      serial: "RFD40-001",
+      tecnico: "",
+      estado: "Pendiente",
+    },
+    {
+      id: 7,
+      modelo: "Zebra ZT411",
+      serial: "ZT411-001",
+      tecnico: "Jaime",
+      estado: "Completado",
+    },
+    {
+      id: 8,
+      modelo: "Zebra ZD621",
+      serial: "ZD621-001",
+      tecnico: "",
+      estado: "Pendiente",
+    },
+  ]});
+  const equipos =
+  ordenSeleccionada
+    ? equiposPorOrden[
+        ordenSeleccionada.numero
+      ] || []
+    : [];
+    const actualizarEquiposOrden = (actualizador) => {
+  if (!ordenSeleccionada) return;
+
+  setEquiposPorOrden((estadoActual) => {
+    const listaActual =
+      estadoActual[
+        ordenSeleccionada.numero
+      ] || [];
+
+    const nuevaLista =
+      typeof actualizador === "function"
+        ? actualizador(listaActual)
+        : actualizador;
+
+    return {
+      ...estadoActual,
+      [ordenSeleccionada.numero]:
+        nuevaLista,
+    };
+  });
+};
+
+  const ingresar = () => {
+    if (!pin.trim()) {
+      alert("Ingresa el PIN");
+      return;
+    }
+
+    if (tipoAcceso === "tecnico" && !nombreTecnico.trim()) {
+      alert("Ingresa el nombre del técnico");
+      return;
+    }
+
+    setPantalla("ordenes");
+  };
+
+  const cerrarSesion = () => {
+    setPantalla("login");
+    setPin("");
+  };
+
+  const abrirOrden = (orden) => {
+    if (orden.estado === "Cerrado") {
+      alert("Esta orden ya se encuentra cerrada.");
+      return;
+    }
+
+    setOrdenSeleccionada(orden);
+    setPantalla("equipos");
+  };
+
+  const obtenerClaseEstado = (estado) => {
+    if (estado === "Completado") return "equipment-status completed";
+    if (estado === "En proceso") return "equipment-status working";
+
+    return "equipment-status pending";
+  };
+
+ const abrirEquipo = (equipo) => {
+  // Si otro técnico ya está trabajando el equipo,
+  // no permitimos que un técnico diferente lo abra.
+  if (
+    equipo.estado === "En proceso" &&
+    equipo.tecnico !== nombreTecnico &&
+    tipoAcceso !== "administrador"
+  ) {
+    alert(
+      `Este equipo está siendo trabajado por ${equipo.tecnico}.`
+    );
+    return;
+  }
+
+  // Si ya fue terminado, no permitimos modificarlo.
+  if (equipo.estado === "Completado") {
+    alert("Este equipo ya fue completado.");
+    return;
+  }
+
+  let equipoActualizado = equipo;
+
+  // Solo asignamos técnico cuando el equipo estaba pendiente.
+  if (equipo.estado === "Pendiente") {
+    const tecnicoAsignado =
+      tipoAcceso === "tecnico"
+        ? nombreTecnico
+        : "Administrador";
+
+    equipoActualizado = {
+      ...equipo,
+      estado: "En proceso",
+      tecnico: tecnicoAsignado,
+    };
+
+    actualizarEquiposOrden((equiposActuales) =>
+      equiposActuales.map((item) =>
+        item.id === equipo.id
+          ? equipoActualizado
+          : item
+      )
+    );
+  }
+
+  setEquipoSeleccionado(equipoActualizado);
+  setPantalla("checklist");
+};
+  const continuarADiagnostico = (datosChecklist) => {
+  setChecklistActual(datosChecklist);
+  setPantalla("diagnostico");
+};
+
+const finalizarDiagnostico = (datosDiagnostico) => {
+  setDiagnosticoActual(datosDiagnostico);
+
+  actualizarEquiposOrden((equiposActuales) =>
+    equiposActuales.map((equipo) =>
+      equipo.id === equipoSeleccionado.id
+        ? {
+            ...equipo,
+            estado: "Completado",
+            tecnico:
+              nombreTecnico || "Administrador",
+          }
+        : equipo
+    )
+  );
+
+  alert("Resultado guardado correctamente.");
+
+  setPantalla("equipos");
+};
+  const crearNuevaOrden = (
+  nuevaOrden,
+  nuevosEquipos
+) => {
+  setOrdenes((ordenesActuales) => [
+    ...ordenesActuales,
+    nuevaOrden,
+  ]);
+
+  setEquiposPorOrden((estadoActual) => ({
+    ...estadoActual,
+    [nuevaOrden.numero]: nuevosEquipos,
+  }));
+
+  setOrdenSeleccionada(nuevaOrden);
+
+  setPantalla("equipos");
+};
+const guardarSerialEquipo = (serial) => {
+  if (!equipoSeleccionado) return;
+
+  const equipoActualizado = {
+    ...equipoSeleccionado,
+    serial,
+  };
+
+  actualizarEquiposOrden((equiposActuales) =>
+    equiposActuales.map((equipo) =>
+      equipo.id === equipoSeleccionado.id
+        ? equipoActualizado
+        : equipo
+    )
+  );
+
+  setEquipoSeleccionado(equipoActualizado);
+};
+if (pantalla === "nuevaOrden") {
+  return (
+    <NuevaOrden
+      ordenes={ordenes}
+      volverOrdenes={() =>
+        setPantalla("ordenes")
+      }
+      guardarNuevaOrden={crearNuevaOrden}
+    />
+  );
+}
+if (
+  pantalla === "diagnostico" &&
+  equipoSeleccionado
+) {
+  return (
+    <Diagnostico
+      equipo={equipoSeleccionado}
+      nombreTecnico={nombreTecnico}
+      volverChecklist={() =>
+        setPantalla("checklist")
+      }
+      guardarDiagnostico={
+        finalizarDiagnostico
+      }
+    />
+  );
+}
+if (
+  pantalla === "checklist" &&
+  equipoSeleccionado
+) {
+  return (
+    <Checklist
+      equipo={equipoSeleccionado}
+      nombreTecnico={nombreTecnico}
+      volverEquipos={() => setPantalla("equipos")}
+      continuarDiagnostico={continuarADiagnostico}
+      guardarSerialEquipo={guardarSerialEquipo}
+    />
+  );
+ 
+ 
+}
+    if (pantalla === "equipos" && ordenSeleccionada) {
+    return (
+      <Equipos
+        ordenSeleccionada={ordenSeleccionada}
+        equipos={equipos}
+        volverOrdenes={() => setPantalla("ordenes")}
+        abrirEquipo={abrirEquipo}
+        obtenerClaseEstado={obtenerClaseEstado}
+      />
+    );
+  }
+
+  if (pantalla === "ordenes") {
+    return (
+      <Ordenes
+        tipoAcceso={tipoAcceso}
+        nombreTecnico={nombreTecnico}
+        ordenes={ordenes}
+        cerrarSesion={cerrarSesion}
+        abrirOrden={abrirOrden}
+        nuevaOrden={() => setPantalla("nuevaOrden")}
+      />
+    );
+  }
+
+  return (
+    <Login
+      tipoAcceso={tipoAcceso}
+      setTipoAcceso={setTipoAcceso}
+      pin={pin}
+      setPin={setPin}
+      nombreTecnico={nombreTecnico}
+      setNombreTecnico={setNombreTecnico}
+      ingresar={ingresar}
+    />
+  );
+
+}
+
+
+ 
+
+export default App;
+

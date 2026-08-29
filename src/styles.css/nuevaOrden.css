@@ -1,0 +1,95 @@
+/* =========================
+   NUEVA ORDEN
+========================= */
+
+.new-order-equipment {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #edf1f5;
+}
+
+.new-order-equipment:last-child {
+  border-bottom: none;
+}
+
+.new-order-equipment strong {
+  display: block;
+
+  color: #10294b;
+
+  font-size: 13px;
+}
+
+.new-order-equipment span,
+.new-order-equipment small {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #718096;
+
+  font-size: 10px;
+}
+
+.new-order-equipment button {
+  width: 32px;
+  height: 32px;
+
+  border: none;
+  border-radius: 8px;
+
+  background: #fdecea;
+
+  color: #b72c25;
+
+  font-size: 18px;
+}
+
+/* =========================
+   DATOS DE IDENTIFICACIÓN
+========================= */
+
+.equipment-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  margin: 7px 0 12px;
+}
+
+.equipment-category {
+  display: inline-block;
+
+  padding: 5px 9px;
+
+  background: #e9f7f3;
+
+  border: 1px solid #ccebe3;
+  border-radius: 7px;
+
+  color: #087c67;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.equipment-code {
+  display: inline-block;
+
+  margin: 0;
+  padding: 5px 9px;
+
+  background: #eef4ff;
+
+  border: 1px solid #d7e5fb;
+  border-radius: 7px;
+
+  color: #0b63e5;
+
+  font-size: 11px;
+  font-weight: 700;
+}

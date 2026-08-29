@@ -1,0 +1,159 @@
+/* =========================
+   CHECKLIST
+========================= */
+
+.checklist-page {
+  padding-bottom: 40px;
+}
+
+.checklist-equipment-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 14px;
+}
+
+.checklist-label {
+  display: block;
+  margin-bottom: 4px;
+  color: #8995a6;
+  font-size: 10px;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+.checklist-equipment-card h2 {
+  margin: 0;
+  color: #10294b;
+  font-size: 17px;
+}
+
+.checklist-equipment-card p {
+  margin: 5px 0 0;
+  color: #718096;
+  font-size: 12px;
+}
+
+.checklist-technician {
+  margin-top: 10px;
+  padding: 10px 13px;
+  background: #f2f7fd;
+  border-radius: 10px;
+  color: #607086;
+  font-size: 12px;
+}
+
+.checklist-section {
+  margin-top: 22px;
+  padding: 16px;
+  background: #ffffff;
+  border: 1px solid #dce4ed;
+  border-radius: 14px;
+}
+
+.checklist-section h3 {
+  margin: 0 0 5px;
+  color: #10294b;
+  font-size: 16px;
+}
+
+.checklist-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #edf1f5;
+}
+
+.checklist-item:last-child {
+  border-bottom: none;
+}
+
+.checklist-item p {
+  margin: 0 0 10px;
+  color: #33465e;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.checklist-options {
+  display: grid;
+  grid-template-columns:
+    repeat(4, 1fr);
+  gap: 5px;
+}
+
+.check-option {
+  padding: 9px 3px;
+  border: 1px solid #d4dde8;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.check-option.ok.selected {
+  background: #e5f7f1;
+  border-color: #0d9b7d;
+  color: #087c67;
+}
+
+.check-option.fail.selected {
+  background: #fdecea;
+  border-color: #d83b32;
+  color: #b72c25;
+}
+
+.check-option.na.selected {
+  background: #edf2f7;
+  border-color: #8291a5;
+  color: #53657c;
+}
+
+.check-option.untested.selected {
+  background: #fff3de;
+  border-color: #d98d11;
+  color: #a66a00;
+}
+
+.failure-details {
+  margin-top: 12px;
+  padding: 12px;
+  background: #fff8f7;
+  border: 1px solid #f3d2cf;
+  border-radius: 10px;
+}
+
+.failure-details label {
+  display: block;
+  margin-bottom: 7px;
+  color: #9d322b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.failure-details textarea {
+  width: 100%;
+  min-height: 75px;
+  padding: 10px;
+  resize: vertical;
+  border: 1px solid #e0c4c1;
+  border-radius: 9px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+}
+
+.photo-button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 9px;
+  border: 1px solid #0b63e5;
+  border-radius: 9px;
+  background: #ffffff;
+  color: #0b63e5;
+  font-size: 11px;
+  font-weight: 700;
+}
