@@ -7,6 +7,7 @@ import Checklist from "./pages/Checklist";
 import Diagnostico from "./pages/Diagnostico";
 import NuevaOrden from "./pages/NuevaOrden";
 import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
+import DetalleEquipo from "./pages/DetalleEquipo";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -168,13 +169,27 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({
     return "equipment-status pending";
   };
 
- const abrirEquipo = (equipo) => {
-  // Si otro técnico ya está trabajando el equipo,
-  // no permitimos que un técnico diferente lo abra.
+const abrirEquipo = (equipo) => {
+  // Un equipo terminado puede ser consultado
+  // tanto por técnico como por administrador.
+  if (equipo.estado === "Completado") {
+    setEquipoSeleccionado(equipo);
+    setPantalla("detalleEquipo");
+    return;
+  }
+
+  // El administrador no realiza mantenimiento.
+  if (tipoAcceso === "administrador") {
+    alert(
+      "El administrador puede supervisar la orden, pero el mantenimiento debe ser realizado por un técnico."
+    );
+    return;
+  }
+
+  // Bloqueo si otro técnico ya trabaja el equipo.
   if (
     equipo.estado === "En proceso" &&
-    equipo.tecnico !== nombreTecnico &&
-    tipoAcceso !== "administrador"
+    equipo.tecnico !== nombreTecnico
   ) {
     alert(
       `Este equipo está siendo trabajado por ${equipo.tecnico}.`
@@ -182,37 +197,13 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({
     return;
   }
 
-  // Si ya fue terminado, no permitimos modificarlo.
- if (equipo.estado === "Completado") {
-  console.log("RESULTADO COMPLETO DEL EQUIPO:", equipo);
-
-  alert(
-    "Este equipo ya fue completado. El resultado está guardado."
-  );
-
-  return;
-}
-
   let equipoActualizado = equipo;
-// Si el usuario es administrador no puede ver el checklist
-  if (tipoAcceso === "administrador") {
-  alert(
-    "Esta tarea debe ser completada por un tecnico."
-  );
-  return;
-}
 
-  // Solo asignamos técnico cuando el equipo estaba pendiente.
   if (equipo.estado === "Pendiente") {
-    const tecnicoAsignado =
-      tipoAcceso === "tecnico"
-        ? nombreTecnico
-        : "Administrador";
-
     equipoActualizado = {
       ...equipo,
       estado: "En proceso",
-      tecnico: tecnicoAsignado,
+      tecnico: nombreTecnico,
     };
 
     actualizarEquiposOrden((equiposActuales) =>
@@ -364,6 +355,20 @@ const agregarEquiposAOrden = ({
 
   setPantalla("equipos");
 };
+if (
+  pantalla === "detalleEquipo" &&
+  equipoSeleccionado
+) {
+  return (
+    <DetalleEquipo
+      equipo={equipoSeleccionado}
+      orden={ordenSeleccionada}
+      volver={() =>
+        setPantalla("equipos")
+      }
+    />
+  );
+}
 if (
   pantalla === "agregarEquipoOrden" &&
   ordenSeleccionada

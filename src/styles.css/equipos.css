@@ -294,3 +294,136 @@
   font-size: 9px !important;
   font-weight: 700;
 }
+/* =========================
+   DETALLE EQUIPO COMPLETADO
+========================= */
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+
+  padding: 11px 0;
+
+  border-bottom: 1px solid #edf1f5;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-row span {
+  color: #718096;
+
+  font-size: 11px;
+}
+
+.detail-row strong {
+  color: #10294b;
+
+  font-size: 11px;
+
+  text-align: right;
+}
+
+.detail-block {
+  margin-bottom: 17px;
+}
+
+.detail-block span {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #718096;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.detail-block strong {
+  color: #10294b;
+
+  font-size: 14px;
+}
+
+.detail-block p {
+  margin: 0;
+
+  color: #40516a;
+
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 12px 0;
+
+  border-bottom: 1px solid #edf1f5;
+}
+
+.result-row:last-child {
+  border-bottom: none;
+}
+
+.result-row > div {
+  min-width: 0;
+}
+
+.result-row strong {
+  display: block;
+
+  color: #33465e;
+
+  font-size: 12px;
+}
+
+.result-row p {
+  margin: 5px 0 0;
+
+  color: #718096;
+
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.result-badge {
+  flex-shrink: 0;
+
+  padding: 5px 8px;
+
+  border-radius: 20px;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.result-ok {
+  background: #e7f7f2;
+  color: #087c67;
+}
+
+.result-fail {
+  background: #fdecea;
+  color: #b72c25;
+}
+
+.result-neutral {
+  background: #edf2f7;
+  color: #53657c;
+}
+
+.empty-result {
+  margin: 0;
+
+  color: #8995a6;
+
+  font-size: 12px;
+}
