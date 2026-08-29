@@ -232,27 +232,65 @@
 
 .equipment-category-list {
   display: inline-block !important;
-
   width: fit-content;
-
   margin-top: 6px;
   padding: 4px 8px;
-
   background: #e9f7f3;
-
   border: 1px solid #ccebe3;
   border-radius: 6px;
-
   color: #087c67 !important;
-
   font-size: 10px !important;
   font-weight: 700;
 }
 
 .equipment-serial {
   margin-top: 7px !important;
-
   color: #66778d !important;
-
   font-size: 11px !important;
+}
+/* =========================
+   EQUIPOS ADICIONALES
+========================= */
+
+.add-found-equipment-button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+  border: 1px dashed #0b63e5;
+  border-radius: 11px;
+  background: #f5f9ff;
+  color: #0b63e5;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.additional-equipment-info {
+  margin-bottom: 18px;
+  padding: 13px;
+
+  background: #f2f7fd;
+  border: 1px solid #d9e8f8;
+  border-radius: 11px;
+}
+
+.additional-equipment-info strong {
+  color: #174f91;
+  font-size: 12px;
+}
+
+.additional-equipment-info p {
+  margin: 5px 0 0;
+  color: #64748b;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.additional-equipment-tag {
+  display: inline-block !important;
+  width: fit-content;
+  margin-top: 5px;
+  padding: 3px 7px;
+  color: #9b6500 !important;
+  font-size: 9px !important;
+  font-weight: 700;
 }

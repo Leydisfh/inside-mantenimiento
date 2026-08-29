@@ -7,6 +7,8 @@ export function Equipos({
   volverOrdenes,
   abrirEquipo,
   obtenerClaseEstado,
+  tipoAcceso,
+  agregarEquipo,
 
 }
 
@@ -95,7 +97,7 @@ export function Equipos({
 
         <div className="equipment-search">
           <input
-  placeholder="Buscar por modelo o serial..."
+  placeholder="Buscar por modelo o serie..."
   type="text"
   value={busqueda}
   onChange={(e) =>
@@ -149,6 +151,11 @@ export function Equipos({
 </button>
 
         </div>
+    <button
+        className="add-found-equipment-button"
+        onClick={agregarEquipo} >
+        + Agregar equipo 
+    </button>
 
         <section className="equipment-list">
 
@@ -174,6 +181,11 @@ export function Equipos({
   <span className="equipment-category-list">
     {equipo.categoria || "Sin categoría"}
   </span>
+  {equipo.origen === "Adicional" && (
+  <span className="additional-equipment-tag">
+    Agregado durante mantenimiento
+  </span>
+)}
 
   <span className="equipment-serial">
     {equipo.serial

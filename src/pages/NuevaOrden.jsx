@@ -49,6 +49,9 @@ function NuevaOrden({
 
         tecnico: "",
         estado: "Pendiente",
+        origen: "Planificado",
+        agregadoPor: "Administrador",
+        fechaAgregado: new Date().toISOString(),
       })
     );
 

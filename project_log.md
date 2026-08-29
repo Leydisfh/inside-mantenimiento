@@ -326,6 +326,29 @@ Al finalizar un mantenimiento, cada equipo conserva:
 
 Estos datos serán utilizados posteriormente para generar el informe PDF de la orden.
 
+## Equipos adicionales durante el mantenimiento
+
+Una orden abierta permite agregar equipos adicionales.
+
+Puede hacerlo:
+- Técnico
+- Administrador
+
+El técnico puede agregar:
+- Categoría
+- Modelo
+- Cantidad
+
+Los equipos adicionales quedan identificados con:
+- Origen: Adicional
+- Usuario que lo agregó
+- Fecha y hora
+- Estado inicial: Pendiente
+
+El técnico no puede eliminar equipos ni modificar la orden.
+
+El administrador no puede realizar checklists ni diagnósticos técnicos.
+
 # Próximas etapas
 
 1. Checklist específico por modelo.

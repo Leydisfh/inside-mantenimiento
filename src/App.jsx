@@ -6,6 +6,7 @@ import Equipos from "./pages/Equipos";
 import Checklist from "./pages/Checklist";
 import Diagnostico from "./pages/Diagnostico";
 import NuevaOrden from "./pages/NuevaOrden";
+import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -193,6 +194,13 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({
 }
 
   let equipoActualizado = equipo;
+// Si el usuario es administrador no puede ver el checklist
+  if (tipoAcceso === "administrador") {
+  alert(
+    "Esta tarea debe ser completada por un tecnico."
+  );
+  return;
+}
 
   // Solo asignamos técnico cuando el equipo estaba pendiente.
   if (equipo.estado === "Pendiente") {
@@ -292,6 +300,90 @@ const guardarSerialEquipo = (serial) => {
 
   setEquipoSeleccionado(equipoActualizado);
 };
+const agregarEquiposAOrden = ({
+  categoria,
+  modelo,
+  cantidad,
+}) => {
+  if (!ordenSeleccionada) return;
+
+  const usuario =
+    tipoAcceso === "tecnico"
+      ? nombreTecnico
+      : "Administrador";
+
+  actualizarEquiposOrden((equiposActuales) => {
+    const numerosExistentes = equiposActuales
+      .map((equipo) => {
+        if (!equipo.codigoInterno) return 0;
+
+        const numero = Number(
+          equipo.codigoInterno.replace("EQ-", "")
+        );
+
+        return Number.isNaN(numero)
+          ? 0
+          : numero;
+      });
+
+    const ultimoNumero =
+      numerosExistentes.length > 0
+        ? Math.max(...numerosExistentes)
+        : 0;
+
+    const nuevosEquipos = Array.from(
+      { length: cantidad },
+      (_, index) => ({
+        id: Date.now() + index,
+
+        codigoInterno: `EQ-${String(
+          ultimoNumero + index + 1
+        ).padStart(3, "0")}`,
+
+        categoria,
+        modelo,
+        serial: "",
+        tecnico: "",
+        estado: "Pendiente",
+
+        origen: "Adicional",
+        agregadoPor: usuario,
+        fechaAgregado: new Date().toISOString(),
+      })
+    );
+
+    return [
+      ...equiposActuales,
+      ...nuevosEquipos,
+    ];
+  });
+
+  alert(
+    `${cantidad} equipo(s) agregado(s) correctamente.`
+  );
+
+  setPantalla("equipos");
+};
+if (
+  pantalla === "agregarEquipoOrden" &&
+  ordenSeleccionada
+) {
+  return (
+    <AgregarEquipoOrden
+      orden={ordenSeleccionada}
+      equiposActuales={equipos}
+      usuario={
+        tipoAcceso === "tecnico"
+          ? nombreTecnico
+          : "Administrador"
+      }
+      volver={() =>
+        setPantalla("equipos")
+      }
+      agregarEquipos={agregarEquiposAOrden}
+    />
+  );
+}
 if (pantalla === "nuevaOrden") {
   return (
     <NuevaOrden
@@ -344,6 +436,10 @@ if (
         volverOrdenes={() => setPantalla("ordenes")}
         abrirEquipo={abrirEquipo}
         obtenerClaseEstado={obtenerClaseEstado}
+        tipoAcceso={tipoAcceso}
+        agregarEquipo={() =>
+        setPantalla("agregarEquipoOrden")
+}
       />
     );
   }
