@@ -243,6 +243,21 @@ Pendiente:
 
 Agregar pruebas específicas por modelo.
 
+## Checklist específico por modelo
+
+Se separó la configuración de checklists del componente visual.
+
+Archivo:
+
+src/data/checklists.js
+
+Funcionamiento:
+
+Categoría → checklist estándar  
+Modelo → pruebas adicionales
+
+Esto permite agregar nuevos modelos sin modificar la pantalla Checklist.jsx.
+
 ---
 
 ## 12. Diagnóstico final
