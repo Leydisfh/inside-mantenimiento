@@ -111,6 +111,54 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({
         ordenSeleccionada.numero
       ] || []
     : [];
+    const ordenesConProgreso = ordenes.map((orden) => {
+  const equiposOrden =
+    equiposPorOrden[orden.numero] || [];
+
+  const totalEquipos = equiposOrden.length;
+
+  const completados = equiposOrden.filter(
+    (equipo) => equipo.estado === "Completado"
+  ).length;
+  const porcentajeProgreso =
+  totalEquipos === 0
+    ? 0
+    : Math.round(
+        (completados / totalEquipos) * 100
+      );
+
+const listaParaCerrar =
+  totalEquipos > 0 &&
+  completados === totalEquipos;
+
+  const progreso =
+    totalEquipos === 0
+      ? 0
+      : Math.round(
+          (completados / totalEquipos) * 100
+        );
+
+  let estadoCalculado = orden.estado;
+
+  if (orden.estado !== "Cerrada") {
+    if (
+      totalEquipos > 0 &&
+      completados === totalEquipos
+    ) {
+      estadoCalculado = "Lista para cerrar";
+    } else {
+      estadoCalculado = "En proceso";
+    }
+  }
+
+  return {
+    ...orden,
+    equipos: totalEquipos,
+    completados,
+    progreso,
+    estado: estadoCalculado,
+  };
+});
     const actualizarEquiposOrden = (actualizador) => {
   if (!ordenSeleccionada) return;
 
@@ -454,7 +502,7 @@ if (
       <Ordenes
         tipoAcceso={tipoAcceso}
         nombreTecnico={nombreTecnico}
-        ordenes={ordenes}
+        ordenes={ordenesConProgreso}
         cerrarSesion={cerrarSesion}
         abrirOrden={abrirOrden}
         nuevaOrden={() => setPantalla("nuevaOrden")}

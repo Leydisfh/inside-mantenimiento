@@ -1,4 +1,5 @@
 import "../styles.css/login.css"
+import logo from "../assets/logo.jpg";
 export function Login({
   tipoAcceso,
   setTipoAcceso,
@@ -11,10 +12,8 @@ export function Login({
   return (
     <div className="app">
       <main className="login-container">
-
         <div className="brand">
-          <div className="logo">IP</div>
-
+          <img src={logo} alt="Inside Panamá" />
           <div>
             <h1>Inside Panamá</h1>
             <p>Mantenimiento preventivo y diagnóstico</p>

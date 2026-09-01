@@ -1,4 +1,5 @@
 import "../styles.css/ordenes.css"
+import logo from "../assets/logo.jpg";
 export function Ordenes({
   tipoAcceso,
   nombreTecnico,
@@ -13,7 +14,7 @@ export function Ordenes({
 
         <header className="orders-header">
           <div className="brand-small">
-            <div className="logo-small">IP</div>
+            <img src={logo} alt="Inside Panamá" />
 
             <div>
               <strong>Inside Panamá</strong>

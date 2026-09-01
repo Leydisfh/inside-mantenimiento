@@ -314,15 +314,12 @@
 
 .detail-row span {
   color: #718096;
-
   font-size: 11px;
 }
 
 .detail-row strong {
   color: #10294b;
-
   font-size: 11px;
-
   text-align: right;
 }
 
@@ -332,28 +329,21 @@
 
 .detail-block span {
   display: block;
-
   margin-bottom: 5px;
-
   color: #718096;
-
   font-size: 10px;
   font-weight: 700;
-
   text-transform: uppercase;
 }
 
 .detail-block strong {
   color: #10294b;
-
   font-size: 14px;
 }
 
 .detail-block p {
   margin: 0;
-
   color: #40516a;
-
   font-size: 12px;
   line-height: 1.5;
 }
@@ -363,9 +353,7 @@
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
-
   padding: 12px 0;
-
   border-bottom: 1px solid #edf1f5;
 }
 
@@ -379,28 +367,21 @@
 
 .result-row strong {
   display: block;
-
   color: #33465e;
-
   font-size: 12px;
 }
 
 .result-row p {
   margin: 5px 0 0;
-
   color: #718096;
-
   font-size: 11px;
   line-height: 1.4;
 }
 
 .result-badge {
   flex-shrink: 0;
-
   padding: 5px 8px;
-
   border-radius: 20px;
-
   font-size: 9px;
   font-weight: 700;
 }
@@ -422,8 +403,6 @@
 
 .empty-result {
   margin: 0;
-
   color: #8995a6;
-
   font-size: 12px;
 }

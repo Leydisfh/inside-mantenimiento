@@ -20,6 +20,17 @@ export function Equipos({
   const completados = equipos.filter(
     (equipo) => equipo.estado === "Completado"
   ).length;
+  const porcentajeProgreso =
+  totalEquipos === 0
+    ? 0
+    : Math.round(
+        (completados / totalEquipos) * 100
+      );
+      
+
+const listaParaCerrar =
+  totalEquipos > 0 &&
+  completados === totalEquipos;
 
   const pendientes = equipos.filter(
     (equipo) => equipo.estado === "Pendiente"
@@ -32,6 +43,24 @@ export function Equipos({
   const coincideEstado =
     filtro === "Todos" ||
     equipo.estado === filtro;
+    {tipoAcceso === "administrador" &&
+  listaParaCerrar && (
+    <div className="order-ready-card">
+      <strong>
+        Mantenimiento técnico completado
+      </strong>
+
+      <p>
+        Los {totalEquipos} equipos de esta orden
+        tienen su checklist y diagnóstico
+        completados.
+      </p>
+
+      <span>
+        Orden lista para revisión del informe
+      </span>
+    </div>
+  )}
 
   const textoBusqueda =
     busqueda.toLowerCase();
@@ -150,6 +179,7 @@ export function Equipos({
   Completados
 </button>
 
+
         </div>
     <button
         className="add-found-equipment-button"
@@ -200,7 +230,6 @@ export function Equipos({
       : "Sin asignar"}
   </small>
 </div>
-
               </div>
 
               <div className="equipment-right">
@@ -216,7 +245,6 @@ export function Equipos({
                 <span className="equipment-arrow">
                   ›
                 </span>
-
               </div>
 
             </article>
