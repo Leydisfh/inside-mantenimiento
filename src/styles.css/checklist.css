@@ -157,3 +157,33 @@
   font-size: 11px;
   font-weight: 700;
 }
+
+.photo-button input {
+  display: none;
+}
+.failure-photo-preview {
+  margin-top: 10px;
+}
+
+.failure-photo-preview img {
+  display: block;
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 9px;
+}
+
+.failure-photo-preview button {
+  width: 100%;
+  margin-top: 7px;
+  padding: 8px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: #fbeeee;
+  color: #a64242;
+
+  font-size: 10px;
+  font-weight: 700;
+}

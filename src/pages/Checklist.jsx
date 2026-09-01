@@ -1,6 +1,7 @@
 import "../styles.css/checklist.css"
 import { useState } from "react";
 import { obtenerChecklist } from "../data/checklists";
+import EvidenciasEquipo from "../components/EvidenciasEquipos";
 
 
 function Checklist({
@@ -17,16 +18,21 @@ const pruebas = obtenerChecklist(
 );
   const [resultados, setResultados] = useState({});
   const [observaciones, setObservaciones] = useState({});
-  const [serialEquipo, setSerialEquipo] = useState(
-  equipo.serial || ""
-);
-
+  const [serialEquipo, setSerialEquipo] = useState(equipo.serial || "");
+  const [fotosFalla, setFotosFalla] = useState({});
   const seleccionarResultado = (item, resultado) => {
     setResultados({
       ...resultados,
       [item]: resultado,
     });
   };
+   const [evidencias, setEvidencias] = useState({
+  antes: null,
+  despues: null,
+  falla: null,
+  adicional: null,
+});
+
 
   const cambiarObservacion = (item, texto) => {
     setObservaciones({
@@ -34,6 +40,25 @@ const pruebas = obtenerChecklist(
       [item]: texto,
     });
   };
+  const agregarFotoFalla = (item, archivo) => {
+  if (!archivo) return;
+
+  if (!archivo.type.startsWith("image/")) {
+    alert("Selecciona una imagen válida.");
+    return;
+  }
+
+  const lector = new FileReader();
+
+  lector.onload = () => {
+    setFotosFalla((actuales) => ({
+      ...actuales,
+      [item]: lector.result,
+    }));
+  };
+
+  lector.readAsDataURL(archivo);
+};
 
   const guardarChecklist = () => {
     if (!serialEquipo.trim()) {
@@ -42,8 +67,9 @@ const pruebas = obtenerChecklist(
   );
   return;
 }
+guardarSerialEquipo(serialEquipo.trim());
 
-  guardarSerialEquipo(serialEquipo.trim());
+ 
     const totalPruebas = pruebas.reduce(
       (total, grupo) => total + grupo.items.length,
       0
@@ -58,9 +84,11 @@ const pruebas = obtenerChecklist(
       return;
     }
 
-    continuarDiagnostico({
+  continuarDiagnostico({
   resultados,
   observaciones,
+  evidencias,
+  fotosFalla,
 });
   };
 
@@ -215,9 +243,41 @@ const pruebas = obtenerChecklist(
                       }
                     />
 
-                    <button className="photo-button">
-                      + Agregar fotografía
-                    </button>
+                   <label className="photo-button">
+  + Agregar fotografía
+
+  <input
+    type="file"
+    accept="image/*"
+    capture="environment"
+    onChange={(e) =>
+      agregarFotoFalla(
+        item,
+        e.target.files[0]
+      )
+    }
+  />
+</label>
+{fotosFalla[item] && (
+  <div className="failure-photo-preview">
+    <img
+      src={fotosFalla[item]}
+      alt={`Evidencia de ${item}`}
+    />
+
+    <button
+      type="button"
+      onClick={() =>
+        setFotosFalla((actuales) => ({
+          ...actuales,
+          [item]: null,
+        }))
+      }
+    >
+      Eliminar fotografía
+    </button>
+  </div>
+)}
                   </div>
                 )}
 
@@ -226,6 +286,10 @@ const pruebas = obtenerChecklist(
 
           </section>
         ))}
+        <EvidenciasEquipo
+          evidencias={evidencias}
+          setEvidencias={setEvidencias}
+/>
 
         <button
           className="continue-button"

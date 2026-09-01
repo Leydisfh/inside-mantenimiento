@@ -20,6 +20,7 @@ function App() {
   const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
   const [checklistActual, setChecklistActual] = useState(null);
   const [diagnosticoActual, setDiagnosticoActual] = useState(null);
+  const [origenDetalle, setOrigenDetalle] = useState("equipos");
 
   const [ordenes, setOrdenes] = useState([
     {
@@ -224,10 +225,11 @@ const abrirEquipo = (equipo) => {
   // Un equipo terminado puede ser consultado
   // tanto por técnico como por administrador.
   if (equipo.estado === "Completado") {
-    setEquipoSeleccionado(equipo);
-    setPantalla("detalleEquipo");
-    return;
-  }
+  setEquipoSeleccionado(equipo);
+  setOrigenDetalle("equipos");
+  setPantalla("detalleEquipo");
+  return;
+}
 
   // El administrador no realiza mantenimiento.
   if (tipoAcceso === "administrador") {
@@ -411,12 +413,10 @@ const abrirResumenOrden = () => {
 };
 const verEquipoDesdeResumen = (equipo) => {
   setEquipoSeleccionado(equipo);
+  setOrigenDetalle("resumenOrden");
   setPantalla("detalleEquipo");
 };
-if (
-  pantalla === "detalleEquipo" &&
-  equipoSeleccionado
-) {
+ {
   if (
   pantalla === "resumenOrden" &&
   ordenSeleccionada
@@ -431,16 +431,20 @@ if (
       verEquipo={verEquipoDesdeResumen}
     />
   );
-}
+}if (
+  pantalla === "detalleEquipo" &&
+  equipoSeleccionado
+) {
   return (
     <DetalleEquipo
       equipo={equipoSeleccionado}
       orden={ordenSeleccionada}
       volver={() =>
-        setPantalla("equipos")
+        setPantalla(origenDetalle)
       }
     />
   );
+}
 }
 if (
   pantalla === "agregarEquipoOrden" &&
