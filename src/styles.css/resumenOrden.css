@@ -1,0 +1,321 @@
+/* =========================
+   REVISION DE ORDEN
+========================= */
+
+.review-order-button {
+  width: 100%;
+  margin-top: 14px;
+  padding: 12px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #10294b;
+  color: white;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.review-order-info {
+  margin-top: 15px;
+  padding: 15px;
+
+  background: white;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+}
+
+.review-order-info h2 {
+  margin: 0;
+
+  color: #10294b;
+  font-size: 17px;
+}
+
+.review-order-info p {
+  margin: 4px 0 0;
+
+  color: #718096;
+  font-size: 11px;
+}
+
+.review-progress-header {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 16px;
+
+  color: #53657c;
+  font-size: 11px;
+}
+
+.review-progress-header strong {
+  color: #10294b;
+}
+
+.review-progress-bar {
+  height: 7px;
+  margin-top: 7px;
+  overflow: hidden;
+  background: #e9eef4;
+  border-radius: 10px;
+}
+
+.review-progress-value {
+  height: 100%;
+  background: #087c67;
+  border-radius: 10px;
+  transition: width 0.25s ease;
+}
+
+.review-pending {
+  margin-top: 9px !important;
+
+  font-weight: 600;
+}
+
+.review-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.review-summary-card {
+  padding: 12px;
+  background: white;
+  border: 1px solid #e5eaf0;
+  border-radius: 10px;
+}
+
+.review-summary-card span {
+  display: block;
+  color: #718096;
+  font-size: 10px;
+}
+
+.review-summary-card strong {
+  display: block;
+  margin-top: 5px;
+  color: #10294b;
+  font-size: 20px;
+}
+
+.review-section {
+  margin-top: 20px;
+}
+
+.review-section-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 10px;
+
+  margin-bottom: 10px;
+}
+
+.review-section-title h3 {
+  margin: 0;
+
+  color: #10294b;
+
+  font-size: 14px;
+}
+
+.review-section-title p {
+  margin: 3px 0 0;
+
+  color: #718096;
+
+  font-size: 10px;
+}
+
+.review-section-title > strong {
+  min-width: 27px;
+  padding: 5px 7px;
+  text-align: center;
+  background: #edf2f7;
+  border-radius: 15px;
+  color: #53657c;
+  font-size: 10px;
+}
+
+.review-alert-card {
+  margin-bottom: 10px;
+  padding: 13px;
+  background: white;
+  border: 1px solid #e3e8ee;
+  border-radius: 11px;
+
+}
+
+.review-alert-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.review-alert-header > div {
+  min-width: 0;
+}
+
+.review-alert-header strong {
+  display: block;
+  color: #10294b;
+  font-size: 13px;
+}
+
+.review-alert-header div span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #718096;
+
+  font-size: 10px;
+}
+
+.review-status {
+  flex-shrink: 0;
+  max-width: 135px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.review-status-critical {
+  background: #fde8e7;
+  color: #a52a24;
+}
+
+.review-status-repair {
+  background: #fff0df;
+  color: #9b5c00;
+}
+
+.review-status-warning {
+  background: #fff8dc;
+  color: #826900;
+}
+
+.review-detail {
+  margin-top: 12px;
+    text-align: left;
+}
+
+.review-detail span {
+  display: block;
+
+  margin-bottom: 3px;
+
+  color: #8390a1;
+
+  font-size: 9px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+}
+
+.review-detail p {
+  margin: 0;
+
+  color: #40516a;
+
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.review-priority {
+  margin-top: 11px;
+
+  color: #718096;
+
+  font-size: 10px;
+}
+
+.review-priority strong {
+  color: #10294b;
+}
+
+.review-detail-button {
+  width: 100%;
+
+  margin-top: 13px;
+  padding: 9px;
+
+  border: 1px solid #d9e2ec;
+  border-radius: 8px;
+
+  background: #f8fafc;
+
+  color: #334e68;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.review-operational-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 10px;
+
+  margin-bottom: 7px;
+  padding: 11px 12px;
+
+  background: white;
+
+  border: 1px solid #e5eaf0;
+  border-radius: 9px;
+}
+
+.review-operational-row strong {
+  display: block;
+
+  color: #33465e;
+
+  font-size: 11px;
+}
+
+.review-operational-row div span {
+  display: block;
+
+  margin-top: 3px;
+
+  color: #8390a1;
+
+  font-size: 9px;
+}
+
+.review-operational-status {
+  flex-shrink: 0;
+
+  padding: 4px 7px;
+
+  background: #e7f7f2;
+
+  border-radius: 6px;
+
+  color: #087c67;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.review-empty {
+  padding: 13px;
+
+  background: #f8fafc;
+  border-radius: 9px;
+
+  color: #8390a1;
+
+  font-size: 11px;
+  text-align: center;
+}

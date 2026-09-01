@@ -8,6 +8,8 @@ import Diagnostico from "./pages/Diagnostico";
 import NuevaOrden from "./pages/NuevaOrden";
 import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
 import DetalleEquipo from "./pages/DetalleEquipo";
+import ResumenOrden from "./pages/ResumenOrden";
+
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
@@ -139,6 +141,7 @@ const listaParaCerrar =
         );
 
   let estadoCalculado = orden.estado;
+  
 
   if (orden.estado !== "Cerrada") {
     if (
@@ -403,10 +406,32 @@ const agregarEquiposAOrden = ({
 
   setPantalla("equipos");
 };
+const abrirResumenOrden = () => {
+  setPantalla("resumenOrden");
+};
+const verEquipoDesdeResumen = (equipo) => {
+  setEquipoSeleccionado(equipo);
+  setPantalla("detalleEquipo");
+};
 if (
   pantalla === "detalleEquipo" &&
   equipoSeleccionado
 ) {
+  if (
+  pantalla === "resumenOrden" &&
+  ordenSeleccionada
+) {
+  return (
+    <ResumenOrden
+      orden={ordenSeleccionada}
+      equipos={equipos}
+      volver={() =>
+        setPantalla("equipos")
+      }
+      verEquipo={verEquipoDesdeResumen}
+    />
+  );
+}
   return (
     <DetalleEquipo
       equipo={equipoSeleccionado}
@@ -493,9 +518,23 @@ if (
         agregarEquipo={() =>
         setPantalla("agregarEquipoOrden")
 }
+        revisarOrden={abrirResumenOrden}
       />
     );
   }
+  if (
+  pantalla === "resumenOrden" &&
+  ordenSeleccionada
+) {
+  return (
+    <ResumenOrden
+      orden={ordenSeleccionada}
+      equipos={equipos}
+      volver={() => setPantalla("equipos")}
+      verEquipo={verEquipoDesdeResumen}
+    />
+  );
+}
 
   if (pantalla === "ordenes") {
     return (
@@ -521,6 +560,7 @@ if (
       ingresar={ingresar}
     />
   );
+  
 
 }
 

@@ -9,6 +9,7 @@ export function Equipos({
   obtenerClaseEstado,
   tipoAcceso,
   agregarEquipo,
+  revisarOrden
 
 }
 
@@ -252,21 +253,26 @@ const listaParaCerrar =
 
         </section>
 
-        <button
-          className="service-summary-button"
-          onClick={() =>
-            alert(
-              "Más adelante abriremos el resumen del servicio."
-            )
-          }
-        >
-          Ver resumen del servicio
-        </button>
+    {tipoAcceso === "administrador" && (
+  <button
+    className="review-order-button"
+    onClick={revisarOrden}
+  >
+    Revisar resultados de la orden
+  </button>
+)}
 
       </main>
     </div>
   );
-  
+  {tipoAcceso === "administrador" && (
+  <button
+    className="review-order-button"
+    onClick={revisarOrden}
+  >
+    Revisar resultados de la orden
+  </button>
+)}
 }
 
 export default Equipos;
