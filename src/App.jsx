@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "./lib/supabaseClient";
 import "./App.css";
 import Login from "./pages/Login";
 import Ordenes from "./pages/Ordenes";
@@ -9,6 +10,7 @@ import NuevaOrden from "./pages/NuevaOrden";
 import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
 import DetalleEquipo from "./pages/DetalleEquipo";
 import ResumenOrden from "./pages/ResumenOrden";
+
 
 
 function App() {
@@ -108,7 +110,23 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({
       estado: "Pendiente",
     },
   ]});
-  const equipos =
+  useEffect(() => {
+  const probarSupabase = async () => {
+    const { data, error } = await supabase
+      .from("clientes")
+      .select("*");
+
+    if (error) {
+      console.error("ERROR SUPABASE:", error);
+    } else {
+      console.log("SUPABASE CONECTADO:", data);
+    }
+  };
+
+  probarSupabase();
+}, []);
+  
+const equipos =
   ordenSeleccionada
     ? equiposPorOrden[
         ordenSeleccionada.numero
