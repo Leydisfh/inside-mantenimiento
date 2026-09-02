@@ -365,3 +365,26 @@ El administrador no puede realizar checklists ni diagnósticos técnicos.
 12. Convertir aplicación en PWA.
 13. Publicación.
 
+## Persistencia con Supabase
+
+Implementado:
+- Proyecto React conectado a Supabase.
+- Supabase Auth para Administrador y Técnico.
+- Validación de rol mediante tabla perfiles.
+- RLS habilitado.
+- Políticas de lectura y escritura por rol.
+- Tablas clientes, ordenes, equipos y resultados_equipo.
+- Creación de órdenes en Supabase.
+- Creación automática de clientes.
+- Generación consecutiva de números de orden desde la base de datos.
+- Equipos asociados a cada orden.
+- Carga de clientes, órdenes, equipos y resultados desde Supabase después del login.
+
+Pendiente:
+- Guardar toma/asignación de equipo en Supabase.
+- Guardar serial en Supabase.
+- Guardar checklist y diagnóstico en resultados_equipo.
+- Guardar evidencias fotográficas en Supabase Storage.
+- Restaurar sesión automáticamente después de F5.
+- Generación del informe PDF.
+- Cierre de órdenes.
