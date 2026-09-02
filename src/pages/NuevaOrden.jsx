@@ -121,6 +121,7 @@ function NuevaOrden({
     const nuevaOrden = {
       numero: numeroOrden,
       cliente: cliente.trim(),
+      abreviatura: codigo,
       ubicacion: ubicacion.trim(),
       fecha,
       observaciones: observaciones.trim(),

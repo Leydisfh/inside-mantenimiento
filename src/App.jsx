@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState} from "react";
 import { supabase } from "./lib/supabaseClient";
 import "./App.css";
 import Login from "./pages/Login";
@@ -24,107 +24,10 @@ function App() {
   const [diagnosticoActual, setDiagnosticoActual] = useState(null);
   const [origenDetalle, setOrigenDetalle] = useState("equipos");
 
-  const [ordenes, setOrdenes] = useState([
-    {
-      numero: "COCH-2026-0001",
-      cliente: "Cochez",
-      ubicacion: "CEDI Central",
-      equipos: 48,
-      progreso: 62,
-      estado: "En proceso",
-    },
-    {
-      numero: "FELIX-2026-0002",
-      cliente: "Félix B. Maduro",
-      ubicacion: "Albrook",
-      equipos: 14,
-      progreso: 100,
-      estado: "Cerrado",
-    },
-    {
-      numero: "DHL-2026-0003",
-      cliente: "DHL",
-      ubicacion: "Panamá Pacífico",
-      equipos: 22,
-      progreso: 18,
-      estado: "En proceso",
-    },
-  ]);
+  const [ordenes, setOrdenes] = useState([]);
 
-const [equiposPorOrden, setEquiposPorOrden] = useState({
-  "COCH-2026-0001": [
-    {
-      id: 1,
-      modelo: "Zebra MC330L",
-      serial: "MC330L-001",
-      tecnico: "Jaime",
-      estado: "Completado",
-    },
-    {
-      id: 2,
-      modelo: "Zebra MC330L",
-      serial: "MC330L-002",
-      tecnico: "Ana",
-      estado: "En proceso",
-    },
-    {
-      id: 3,
-      modelo: "Zebra MC330L",
-      serial: "MC330L-003",
-      tecnico: "",
-      estado: "Pendiente",
-    },
-    {
-      id: 4,
-      modelo: "Zebra TC22",
-      serial: "TC22-001",
-      tecnico: "",
-      estado: "Pendiente",
-    },
-    {
-      id: 5,
-      modelo: "Zebra TC22",
-      serial: "TC22-002",
-      tecnico: "Luis",
-      estado: "En proceso",
-    },
-    {
-      id: 6,
-      modelo: "Zebra RFD40",
-      serial: "RFD40-001",
-      tecnico: "",
-      estado: "Pendiente",
-    },
-    {
-      id: 7,
-      modelo: "Zebra ZT411",
-      serial: "ZT411-001",
-      tecnico: "Jaime",
-      estado: "Completado",
-    },
-    {
-      id: 8,
-      modelo: "Zebra ZD621",
-      serial: "ZD621-001",
-      tecnico: "",
-      estado: "Pendiente",
-    },
-  ]});
-  useEffect(() => {
-  const probarSupabase = async () => {
-    const { data, error } = await supabase
-      .from("clientes")
-      .select("*");
-
-    if (error) {
-      console.error("ERROR SUPABASE:", error);
-    } else {
-      console.log("SUPABASE CONECTADO:", data);
-    }
-  };
-
-  probarSupabase();
-}, []);
+const [equiposPorOrden, setEquiposPorOrden] = useState({});
+  
   
 const equipos =
   ordenSeleccionada
@@ -202,20 +105,343 @@ const listaParaCerrar =
     };
   });
 };
+const cargarDatosDesdeSupabase = async () => {
+  try {
+    const [
+      respuestaClientes,
+      respuestaOrdenes,
+      respuestaEquipos,
+      respuestaResultados,
+    ] = await Promise.all([
+      supabase
+        .from("clientes")
+        .select("*"),
 
-  const ingresar = () => {
-    if (!pin.trim()) {
-      alert("Ingresa el PIN");
-      return;
+      supabase
+        .from("ordenes")
+        .select("*")
+        .order("created_at", {
+          ascending: false,
+        }),
+
+      supabase
+        .from("equipos")
+        .select("*"),
+
+      supabase
+        .from("resultados_equipo")
+        .select("*"),
+    ]);
+
+    if (respuestaClientes.error) {
+      console.error(
+        "ERROR CLIENTES:",
+        respuestaClientes.error
+      );
+      return false;
     }
 
-    if (tipoAcceso === "tecnico" && !nombreTecnico.trim()) {
-      alert("Ingresa el nombre del técnico");
-      return;
+    if (respuestaOrdenes.error) {
+      console.error(
+        "ERROR ORDENES:",
+        respuestaOrdenes.error
+      );
+      return false;
     }
 
-    setPantalla("ordenes");
-  };
+    if (respuestaEquipos.error) {
+      console.error(
+        "ERROR EQUIPOS:",
+        respuestaEquipos.error
+      );
+      return false;
+    }
+
+    if (respuestaResultados.error) {
+      console.error(
+        "ERROR RESULTADOS:",
+        respuestaResultados.error
+      );
+      return false;
+    }
+
+    const clientes =
+      respuestaClientes.data || [];
+
+    const ordenesBD =
+      respuestaOrdenes.data || [];
+
+    const equiposBD =
+      respuestaEquipos.data || [];
+
+    const resultadosBD =
+      respuestaResultados.data || [];
+
+    /*
+      Crear un mapa de clientes.
+
+      Esto nos permite encontrar rápidamente
+      el nombre y abreviatura usando cliente_id.
+    */
+
+    const clientesPorId = {};
+
+    clientes.forEach((cliente) => {
+      clientesPorId[cliente.id] = cliente;
+    });
+
+    /*
+      Crear un mapa de resultados técnicos.
+    */
+
+    const resultadosPorEquipo = {};
+
+    resultadosBD.forEach((resultado) => {
+      resultadosPorEquipo[
+        resultado.equipo_id
+      ] = resultado;
+    });
+
+    /*
+      Convertir las órdenes de Supabase
+      al formato que usa nuestra aplicación.
+    */
+
+    const ordenesParaApp =
+      ordenesBD.map((orden) => {
+        const cliente =
+          clientesPorId[orden.cliente_id];
+
+        return {
+          id: orden.id,
+
+          numero: orden.numero,
+
+          cliente:
+            cliente?.nombre ||
+            "Cliente no identificado",
+
+          abreviatura:
+            cliente?.abreviatura || "",
+
+          ubicacion:
+            orden.ubicacion,
+
+          fecha:
+            orden.fecha,
+
+          observaciones:
+            orden.observaciones || "",
+
+          estado:
+            orden.estado,
+
+          equipos: 0,
+
+          progreso: 0,
+        };
+      });
+
+    /*
+      Relacionar ID de la orden
+      con número de orden.
+    */
+
+    const numeroOrdenPorId = {};
+
+    ordenesParaApp.forEach((orden) => {
+      numeroOrdenPorId[orden.id] =
+        orden.numero;
+    });
+
+    /*
+      Construir equiposPorOrden
+    */
+
+    const equiposAgrupados = {};
+
+    ordenesParaApp.forEach((orden) => {
+      equiposAgrupados[orden.numero] = [];
+    });
+
+    equiposBD.forEach((equipo) => {
+      const numeroOrden =
+        numeroOrdenPorId[equipo.orden_id];
+
+      if (!numeroOrden) return;
+
+      const resultado =
+        resultadosPorEquipo[equipo.id];
+
+      const equipoParaApp = {
+        id: equipo.id,
+
+        codigoInterno:
+          equipo.codigo_interno,
+
+        categoria:
+          equipo.categoria,
+
+        modelo:
+          equipo.modelo,
+
+        serial:
+          equipo.serial || "",
+
+        tecnico:
+          equipo.tecnico || "",
+
+        estado:
+          equipo.estado,
+
+        origen:
+          equipo.origen,
+
+        agregadoPor:
+          equipo.agregado_por,
+
+        fechaAgregado:
+          equipo.fecha_agregado,
+
+        checklist:
+          resultado?.checklist ||
+          equipo.checklist ||
+          null,
+
+        diagnostico:
+          resultado?.diagnostico ||
+          equipo.diagnostico ||
+          null,
+
+        fechaFinalizacion:
+          resultado?.fecha_finalizacion ||
+          equipo.fecha_finalizacion ||
+          null,
+      };
+
+      equiposAgrupados[
+        numeroOrden
+      ].push(equipoParaApp);
+    });
+
+    setOrdenes(ordenesParaApp);
+
+    setEquiposPorOrden(
+      equiposAgrupados
+    );
+
+    return true;
+  } catch (error) {
+    console.error(
+      "ERROR CARGANDO DATOS:",
+      error
+    );
+
+    return false;
+  }
+};
+
+  const ingresar = async () => {
+  if (!pin.trim()) {
+    alert("Ingresa el PIN.");
+    return;
+  }
+
+  if (
+    tipoAcceso === "tecnico" &&
+    !nombreTecnico.trim()
+  ) {
+    alert("Ingresa el nombre del técnico.");
+    return;
+  }
+
+  const email =
+    tipoAcceso === "administrador"
+      ? "insidepanama@zohomail.com"
+      : "soporte-inside@zohomail.com";
+
+  const { data, error } =
+    await supabase.auth.signInWithPassword({
+      email,
+      password: pin.trim(),
+    });
+
+  if (error) {
+    console.error("ERROR LOGIN:", error);
+
+    alert(
+      "No fue posible iniciar sesión. Verifica el PIN."
+    );
+
+    return;
+  }
+
+  const userId = data.user?.id;
+
+  if (!userId) {
+    alert(
+      "No fue posible identificar el usuario."
+    );
+    return;
+  }
+
+  const {
+    data: perfil,
+    error: errorPerfil,
+  } = await supabase
+    .from("perfiles")
+    .select("rol, activo")
+    .eq("id", userId)
+    .single();
+
+  if (errorPerfil || !perfil) {
+    console.error(
+      "ERROR PERFIL:",
+      errorPerfil
+    );
+
+    await supabase.auth.signOut();
+
+    alert(
+      "No se pudo obtener el perfil del usuario."
+    );
+
+    return;
+  }
+
+  if (!perfil.activo) {
+    await supabase.auth.signOut();
+
+    alert(
+      "Este usuario se encuentra desactivado."
+    );
+
+    return;
+  }
+
+  if (perfil.rol !== tipoAcceso) {
+    await supabase.auth.signOut();
+
+    alert(
+      "El tipo de acceso seleccionado no corresponde a este usuario."
+    );
+
+    return;
+  }
+
+  const datosCargados =
+  await cargarDatosDesdeSupabase();
+
+if (!datosCargados) {
+  alert(
+    "Se inició sesión, pero no fue posible cargar la información."
+  );
+  return;
+}
+
+setPin("");
+setPantalla("ordenes");
+};
 
   const cerrarSesion = () => {
     setPantalla("login");
@@ -326,23 +552,311 @@ const finalizarDiagnostico = (datosDiagnostico) => {
 
   setPantalla("equipos");
 };
-  const crearNuevaOrden = (
+const crearNuevaOrden = async (
   nuevaOrden,
   nuevosEquipos
 ) => {
-  setOrdenes((ordenesActuales) => [
-    ...ordenesActuales,
-    nuevaOrden,
-  ]);
+  try {
+    const codigo = nuevaOrden.abreviatura
+      .trim()
+      .toUpperCase();
 
-  setEquiposPorOrden((estadoActual) => ({
-    ...estadoActual,
-    [nuevaOrden.numero]: nuevosEquipos,
-  }));
+    /*
+      1. Buscar si el cliente ya existe
+    */
 
-  setOrdenSeleccionada(nuevaOrden);
+    const {
+      data: clienteExistente,
+      error: errorBuscarCliente,
+    } = await supabase
+      .from("clientes")
+      .select("id, nombre, abreviatura")
+      .eq("abreviatura", codigo)
+      .maybeSingle();
 
-  setPantalla("equipos");
+    if (errorBuscarCliente) {
+      console.error(
+        "ERROR BUSCANDO CLIENTE:",
+        errorBuscarCliente
+      );
+
+      alert(
+        "No fue posible verificar el cliente."
+      );
+
+      return;
+    }
+
+    let clienteId;
+
+    /*
+      2. Si no existe, crear el cliente
+    */
+
+    if (!clienteExistente) {
+      const {
+        data: clienteCreado,
+        error: errorCrearCliente,
+      } = await supabase
+        .from("clientes")
+        .insert({
+          nombre: nuevaOrden.cliente,
+          abreviatura: codigo,
+        })
+        .select()
+        .single();
+
+      if (errorCrearCliente) {
+        console.error(
+          "ERROR CREANDO CLIENTE:",
+          errorCrearCliente
+        );
+
+        alert(
+          "No fue posible crear el cliente."
+        );
+
+        return;
+      }
+
+      clienteId = clienteCreado.id;
+    } else {
+      clienteId = clienteExistente.id;
+    }
+
+    /*
+      3. Calcular el número real de la orden
+         usando las órdenes guardadas en Supabase
+    */
+
+    const año = nuevaOrden.fecha.substring(0, 4);
+
+    const {
+      data: ultimaOrden,
+      error: errorUltimaOrden,
+    } = await supabase
+      .from("ordenes")
+      .select("numero")
+      .like(
+        "numero",
+        `${codigo}-${año}-%`
+      )
+      .order("numero", {
+        ascending: false,
+      })
+      .limit(1);
+
+    if (errorUltimaOrden) {
+      console.error(
+        "ERROR BUSCANDO ORDENES:",
+        errorUltimaOrden
+      );
+
+      alert(
+        "No fue posible calcular el número de la orden."
+      );
+
+      return;
+    }
+
+    let siguienteNumero = 1;
+
+    if (
+      ultimaOrden &&
+      ultimaOrden.length > 0
+    ) {
+      const partes =
+        ultimaOrden[0].numero.split("-");
+
+      const ultimoConsecutivo = Number(
+        partes[partes.length - 1]
+      );
+
+      if (!Number.isNaN(ultimoConsecutivo)) {
+        siguienteNumero =
+          ultimoConsecutivo + 1;
+      }
+    }
+
+    const numeroOrden =
+      `${codigo}-${año}-${String(
+        siguienteNumero
+      ).padStart(4, "0")}`;
+
+    /*
+      4. Crear la orden
+    */
+
+    const {
+      data: ordenCreada,
+      error: errorOrden,
+    } = await supabase
+      .from("ordenes")
+      .insert({
+        numero: numeroOrden,
+        cliente_id: clienteId,
+        ubicacion: nuevaOrden.ubicacion,
+        fecha: nuevaOrden.fecha,
+        observaciones:
+          nuevaOrden.observaciones || null,
+        estado: "En proceso",
+      })
+      .select()
+      .single();
+
+    if (errorOrden) {
+      console.error(
+        "ERROR CREANDO ORDEN:",
+        errorOrden
+      );
+
+      alert(
+        "No fue posible crear la orden."
+      );
+
+      return;
+    }
+
+    /*
+      5. Preparar los equipos para Supabase
+    */
+
+    const equiposParaGuardar =
+      nuevosEquipos.map((equipo) => ({
+        orden_id: ordenCreada.id,
+
+        codigo_interno:
+          equipo.codigoInterno,
+
+        categoria: equipo.categoria,
+
+        modelo: equipo.modelo,
+
+        serial: equipo.serial || null,
+
+        tecnico: null,
+
+        estado: "Pendiente",
+
+        origen:
+          equipo.origen || "Planificado",
+
+        agregado_por:
+          equipo.agregadoPor ||
+          "Administrador",
+
+        fecha_agregado:
+          equipo.fechaAgregado ||
+          new Date().toISOString(),
+      }));
+
+    /*
+      6. Guardar los equipos
+    */
+
+    const {
+      data: equiposGuardados,
+      error: errorEquipos,
+    } = await supabase
+      .from("equipos")
+      .insert(equiposParaGuardar)
+      .select();
+
+    if (errorEquipos) {
+      console.error(
+        "ERROR CREANDO EQUIPOS:",
+        errorEquipos
+      );
+
+      alert(
+        "La orden fue creada, pero ocurrió un error al guardar los equipos."
+      );
+
+      return;
+    }
+
+    /*
+      7. Convertir los datos de Supabase
+         al formato que actualmente usa React
+    */
+
+    const ordenParaApp = {
+      ...nuevaOrden,
+
+      id: ordenCreada.id,
+
+      numero: numeroOrden,
+
+      equipos: equiposGuardados.length,
+
+      progreso: 0,
+
+      estado: "En proceso",
+    };
+
+    const equiposParaApp =
+      equiposGuardados.map((equipo) => ({
+        id: equipo.id,
+
+        codigoInterno:
+          equipo.codigo_interno,
+
+        categoria: equipo.categoria,
+
+        modelo: equipo.modelo,
+
+        serial: equipo.serial || "",
+
+        tecnico: equipo.tecnico || "",
+
+        estado: equipo.estado,
+
+        origen: equipo.origen,
+
+        agregadoPor:
+          equipo.agregado_por,
+
+        fechaAgregado:
+          equipo.fecha_agregado,
+      }));
+
+    /*
+      8. Actualizar React
+    */
+
+    setOrdenes((actuales) => [
+      ...actuales,
+      ordenParaApp,
+    ]);
+
+    setEquiposPorOrden(
+      (estadoActual) => ({
+        ...estadoActual,
+
+        [numeroOrden]:
+          equiposParaApp,
+      })
+    );
+
+    setOrdenSeleccionada(
+      ordenParaApp
+    );
+
+    setPantalla("equipos");
+
+    alert(
+      `Orden ${numeroOrden} creada correctamente.`
+    );
+  } catch (error) {
+    console.error(
+      "ERROR INESPERADO:",
+      error
+    );
+
+    alert(
+      "Ocurrió un error inesperado al crear la orden."
+    );
+  }
 };
 const guardarSerialEquipo = (serial) => {
   if (!equipoSeleccionado) return;
