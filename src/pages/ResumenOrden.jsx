@@ -4,6 +4,7 @@ function ResumenOrden({
   equipos,
   volver,
   verEquipo,
+  generarInforme,
 }) {
   const total = equipos.length;
 
@@ -41,6 +42,9 @@ function ResumenOrden({
       obtenerEstadoFinal(equipo) ===
         "Requiere reparación"
   );
+  const ordenCompleta =
+  total > 0 &&
+  completados === total;
 
   const fueraServicio = equipos.filter(
     (equipo) =>
@@ -292,7 +296,21 @@ function ResumenOrden({
             </div>
           )}
         </section>
-
+{ordenCompleta && (
+  <button
+    type="button"
+    className="generate-report-button"
+    onClick={generarInforme}
+  >
+    Preparar informe
+  </button>
+)}
+{!ordenCompleta && (
+  <div className="report-disabled-message">
+    El informe estará disponible cuando todos
+    los equipos hayan sido completados.
+  </div>
+)}
       </main>
     </div>
   );

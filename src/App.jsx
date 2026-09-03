@@ -10,6 +10,7 @@ import NuevaOrden from "./pages/NuevaOrden";
 import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
 import DetalleEquipo from "./pages/DetalleEquipo";
 import ResumenOrden from "./pages/ResumenOrden";
+import VistaPreviaInforme from "./pages/VistaPreviaInforme";
 
 
 
@@ -25,12 +26,8 @@ function App() {
   const [origenDetalle, setOrigenDetalle] = useState("equipos");
   const [verificandoSesion, setVerificandoSesion] =
   useState(true);
-
   const [ordenes, setOrdenes] = useState([]);
-
-const [equiposPorOrden, setEquiposPorOrden] = useState({});
-  
-  
+  const [equiposPorOrden, setEquiposPorOrden] = useState({});
 const equipos =
       ordenSeleccionada
       ? equiposPorOrden[
@@ -46,6 +43,7 @@ const equipos =
     const completados = equiposOrden.filter(
     (equipo) => equipo.estado === "Completado"
   ).length;
+ 
   const porcentajeProgreso =
   totalEquipos === 0
     ? 0
@@ -1380,6 +1378,23 @@ const verEquipoDesdeResumen = (equipo) => {
   setOrigenDetalle("resumenOrden");
   setPantalla("detalleEquipo");
 };
+const abrirVistaPreviaInforme = () => {
+  const todosCompletados =
+    equipos.length > 0 &&
+    equipos.every(
+      (equipo) =>
+        equipo.estado === "Completado"
+    );
+
+  if (!todosCompletados) {
+    alert(
+      "Todos los equipos deben estar completados antes de preparar el informe."
+    );
+    return;
+  }
+
+  setPantalla("vistaPreviaInforme");
+};
  {
   if (
   pantalla === "resumenOrden" &&
@@ -1393,6 +1408,7 @@ const verEquipoDesdeResumen = (equipo) => {
         setPantalla("equipos")
       }
       verEquipo={verEquipoDesdeResumen}
+      generarInforme={abrirVistaPreviaInforme}
     />
   );
 }if (
@@ -1444,6 +1460,7 @@ if (verificandoSesion) {
   );
 }
 
+
 if (pantalla === "nuevaOrden") {
   return (
     <NuevaOrden
@@ -1471,7 +1488,9 @@ if (
       }
     />
   );
+  
 }
+
 if (
   pantalla === "checklist" &&
   equipoSeleccionado
