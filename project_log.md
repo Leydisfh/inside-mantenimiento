@@ -388,3 +388,21 @@ Pendiente:
 - Restaurar sesión automáticamente después de F5.
 - Generación del informe PDF.
 - Cierre de órdenes.
+
+## Persistencia técnica en Supabase
+
+Implementado:
+- Asignación de equipo a técnico en Supabase.
+- Registro persistente de serial.
+- Guardado de checklist en resultados_equipo.
+- Guardado de diagnóstico en resultados_equipo.
+- Estado Completado persistente.
+- Fecha de finalización persistente.
+- Equipos adicionales guardados en Supabase.
+- Equipos adicionales conservados después de recargar la aplicación.
+
+Pendiente:
+- Evidencias fotográficas con Supabase Storage.
+- Restauración automática de sesión.
+- Informe PDF.
+- Cierre de órdenes.
