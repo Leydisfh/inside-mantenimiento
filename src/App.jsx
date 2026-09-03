@@ -1,4 +1,4 @@
-import { useState} from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
 import "./App.css";
 import Login from "./pages/Login";
@@ -23,6 +23,8 @@ function App() {
   const [checklistActual, setChecklistActual] = useState(null);
   const [diagnosticoActual, setDiagnosticoActual] = useState(null);
   const [origenDetalle, setOrigenDetalle] = useState("equipos");
+  const [verificandoSesion, setVerificandoSesion] =
+  useState(true);
 
   const [ordenes, setOrdenes] = useState([]);
 
@@ -30,18 +32,18 @@ const [equiposPorOrden, setEquiposPorOrden] = useState({});
   
   
 const equipos =
-  ordenSeleccionada
-    ? equiposPorOrden[
-        ordenSeleccionada.numero
+      ordenSeleccionada
+      ? equiposPorOrden[
+      ordenSeleccionada.numero
       ] || []
     : [];
     const ordenesConProgreso = ordenes.map((orden) => {
-  const equiposOrden =
+    const equiposOrden =
     equiposPorOrden[orden.numero] || [];
 
-  const totalEquipos = equiposOrden.length;
+    const totalEquipos = equiposOrden.length;
 
-  const completados = equiposOrden.filter(
+    const completados = equiposOrden.filter(
     (equipo) => equipo.estado === "Completado"
   ).length;
   const porcentajeProgreso =
@@ -438,10 +440,144 @@ if (!datosCargados) {
   );
   return;
 }
+if (perfil.rol === "tecnico") {
+  localStorage.setItem(
+    "inside_nombre_tecnico",
+    nombreTecnico.trim()
+  );
+} else {
+  localStorage.removeItem(
+    "inside_nombre_tecnico"
+  );
+}
 
 setPin("");
 setPantalla("ordenes");
 };
+
+useEffect(() => {
+  const restaurarSesion = async () => {
+    try {
+      const {
+        data: { session },
+        error: errorSesion,
+      } = await supabase.auth.getSession();
+
+      if (errorSesion) {
+        console.error(
+          "ERROR RECUPERANDO SESION:",
+          errorSesion
+        );
+
+        setVerificandoSesion(false);
+        return;
+      }
+
+      /*
+        Si no hay sesión activa,
+        mostramos el Login normalmente.
+      */
+
+      if (!session?.user) {
+        setVerificandoSesion(false);
+        return;
+      }
+
+      /*
+        Consultar el perfil correspondiente
+        al usuario autenticado.
+      */
+
+      const {
+        data: perfil,
+        error: errorPerfil,
+      } = await supabase
+        .from("perfiles")
+        .select("rol, activo")
+        .eq("id", session.user.id)
+        .single();
+
+      if (
+        errorPerfil ||
+        !perfil ||
+        !perfil.activo
+      ) {
+        console.error(
+          "ERROR RESTAURANDO PERFIL:",
+          errorPerfil
+        );
+
+        await supabase.auth.signOut();
+
+        setVerificandoSesion(false);
+        return;
+      }
+
+      /*
+        Restaurar rol.
+      */
+
+      setTipoAcceso(perfil.rol);
+
+      /*
+        Si es técnico, recuperar su nombre.
+      */
+
+      if (perfil.rol === "tecnico") {
+        const tecnicoGuardado =
+          localStorage.getItem(
+            "inside_nombre_tecnico"
+          );
+
+        if (tecnicoGuardado) {
+          setNombreTecnico(
+            tecnicoGuardado
+          );
+        } else {
+          /*
+            Existe sesión técnica, pero no sabemos
+            qué técnico está utilizando el equipo.
+
+            Cerramos la sesión para solicitar
+            nuevamente nombre + PIN.
+          */
+
+          await supabase.auth.signOut();
+
+          setVerificandoSesion(false);
+          return;
+        }
+      }
+
+      /*
+        Cargar órdenes, equipos y resultados.
+      */
+
+      const datosCargados =
+        await cargarDatosDesdeSupabase();
+
+      if (!datosCargados) {
+        console.error(
+          "No fue posible recuperar los datos."
+        );
+
+        setVerificandoSesion(false);
+        return;
+      }
+
+      setPantalla("ordenes");
+    } catch (error) {
+      console.error(
+        "ERROR RESTAURANDO SESION:",
+        error
+      );
+    } finally {
+      setVerificandoSesion(false);
+    }
+  };
+
+  restaurarSesion();
+}, []);
 
   const cerrarSesion = () => {
     setPantalla("login");
@@ -1294,6 +1430,20 @@ if (
     />
   );
 }
+
+
+if (verificandoSesion) {
+  return (
+    <div className="app">
+      <main className="login-container">
+        <div className="session-loading">
+          Cargando...
+        </div>
+      </main>
+    </div>
+  );
+}
+
 if (pantalla === "nuevaOrden") {
   return (
     <NuevaOrden
