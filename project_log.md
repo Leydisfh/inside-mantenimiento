@@ -406,3 +406,22 @@ Pendiente:
 - Restauración automática de sesión.
 - Informe PDF.
 - Cierre de órdenes.
+## Evidencias fotográficas con Supabase Storage
+
+Implementado:
+- Bucket privado evidencias-mantenimiento.
+- Políticas de acceso para Técnico y Administrador.
+- Fotografías almacenadas en Supabase Storage.
+- Evidencias generales: Antes, Después, Falla y Adicional.
+- Fotografías individuales asociadas a cada punto del checklist con Falla.
+- Almacenamiento del path de la fotografía en lugar de Base64.
+- Generación de URLs privadas temporales para visualizar evidencias.
+- Visualización de fotografías de fallas en DetalleEquipo.
+- Compatibilidad temporal con evidencias antiguas almacenadas como Base64.
+
+Pendiente:
+- Verificar persistencia de todas las evidencias después de F5.
+- Mostrar evidencias generales en DetalleEquipo desde Storage.
+- Generación del informe PDF.
+- Restauración automática de sesión.
+- Cierre de órdenes.
