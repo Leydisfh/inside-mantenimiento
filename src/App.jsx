@@ -1379,12 +1379,19 @@ const verEquipoDesdeResumen = (equipo) => {
   setPantalla("detalleEquipo");
 };
 const abrirVistaPreviaInforme = () => {
+  console.log("ABRIENDO VISTA PREVIA");
+
   const todosCompletados =
     equipos.length > 0 &&
     equipos.every(
       (equipo) =>
         equipo.estado === "Completado"
     );
+
+  console.log(
+    "TODOS COMPLETADOS:",
+    todosCompletados
+  );
 
   if (!todosCompletados) {
     alert(
@@ -1459,7 +1466,20 @@ if (verificandoSesion) {
     </div>
   );
 }
-
+if (
+  pantalla === "vistaPreviaInforme" &&
+  ordenSeleccionada
+) {
+  return (
+    <VistaPreviaInforme
+      orden={ordenSeleccionada}
+      equipos={equipos}
+      volver={() =>
+        setPantalla("resumenOrden")
+      }
+    />
+  );
+}
 
 if (pantalla === "nuevaOrden") {
   return (
@@ -1471,6 +1491,7 @@ if (pantalla === "nuevaOrden") {
       guardarNuevaOrden={crearNuevaOrden}
     />
   );
+  
 }
 if (
   pantalla === "diagnostico" &&
@@ -1523,8 +1544,10 @@ if (
         revisarOrden={abrirResumenOrden}
       />
     );
+    
+    
   }
-  if (
+ if (
   pantalla === "resumenOrden" &&
   ordenSeleccionada
 ) {
@@ -1532,11 +1555,14 @@ if (
     <ResumenOrden
       orden={ordenSeleccionada}
       equipos={equipos}
-      volver={() => setPantalla("equipos")}
+      volver={() =>
+        setPantalla("equipos")
+      }
       verEquipo={verEquipoDesdeResumen}
+      generarInforme={abrirVistaPreviaInforme}
     />
   );
-}
+} 
 
   if (pantalla === "ordenes") {
     return (

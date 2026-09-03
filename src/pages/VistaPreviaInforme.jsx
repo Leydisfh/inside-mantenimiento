@@ -1,8 +1,15 @@
 import "../styles.css/vistaPreviaInforme.css"
+import { useState } from "react";
+
+
+import {
+  generarInformePDF,
+} from "../lib/generarInformePDF";
 function VistaPreviaInforme({
   orden,
   equipos,
   volver,
+  
 }) {
   const completados = equipos.filter(
     (equipo) => equipo.estado === "Completado"
@@ -30,6 +37,37 @@ function VistaPreviaInforme({
       equipo.diagnostico?.estadoFinal ===
       "Fuera de servicio"
   );
+  const [generandoPDF, setGenerandoPDF] =
+  useState(false);
+
+const descargarPDF = async (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  try {
+    setGenerandoPDF(true);
+
+    console.log("INICIANDO GENERACION PDF");
+
+    await generarInformePDF(
+      orden,
+      equipos
+    );
+
+    console.log("PDF GENERADO");
+  } catch (error) {
+    console.error(
+      "ERROR GENERANDO PDF:",
+      error
+    );
+
+    alert(
+      "No fue posible generar el informe PDF."
+    );
+  } finally {
+    setGenerandoPDF(false);
+  }
+};
 
   const equiposAtencion = [
     ...fueraServicio,
@@ -232,17 +270,27 @@ function VistaPreviaInforme({
           )}
         </section>
 
-        <div className="report-next-step">
-          <strong>
-            Vista previa preparada
-          </strong>
+      <div className="report-next-step">
+  <strong>
+    Informe listo para generar
+  </strong>
 
-          <p>
-            En el siguiente paso generaremos el PDF
-            con esta información y las evidencias
-            fotográficas correspondientes.
-          </p>
-        </div>
+  <p>
+    Revisa la información antes de generar
+    el documento definitivo.
+  </p>
+</div>
+
+<button
+  type="button"
+  className="generate-report-button"
+  onClick={descargarPDF}
+  disabled={generandoPDF}
+>
+  {generandoPDF
+    ? "Generando PDF..."
+    : "Generar PDF"}
+</button>
 
       </main>
     </div>
