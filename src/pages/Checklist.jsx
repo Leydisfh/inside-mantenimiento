@@ -2,10 +2,15 @@ import "../styles.css/checklist.css"
 import { useState } from "react";
 import { obtenerChecklist } from "../data/checklists";
 import EvidenciasEquipo from "../components/EvidenciasEquipos";
+import {
+  subirEvidencia,
+  eliminarEvidencia,
+} from "../lib/evidenciasStorage";
 
 
 function Checklist({
-   equipo,
+  equipo,
+  ordenId,
   nombreTecnico,
   volverEquipos,
   continuarDiagnostico,
@@ -40,7 +45,10 @@ const pruebas = obtenerChecklist(
       [item]: texto,
     });
   };
-  const agregarFotoFalla = (item, archivo) => {
+const agregarFotoFalla = async (
+  item,
+  archivo
+) => {
   if (!archivo) return;
 
   if (!archivo.type.startsWith("image/")) {
@@ -48,16 +56,47 @@ const pruebas = obtenerChecklist(
     return;
   }
 
-  const lector = new FileReader();
+  try {
+    const fotoAnterior =
+      fotosFalla[item];
 
-  lector.onload = () => {
+    const nuevaFoto =
+      await subirEvidencia({
+        ordenId,
+        equipoId: equipo.id,
+        carpeta: "fallas",
+        nombre: item,
+        archivo,
+      });
+
+    if (fotoAnterior?.path) {
+      try {
+        await eliminarEvidencia(
+          fotoAnterior.path
+        );
+      } catch (error) {
+        console.error(
+          "No se pudo eliminar la fotografía anterior:",
+          error
+        );
+      }
+    }
+
     setFotosFalla((actuales) => ({
       ...actuales,
-      [item]: lector.result,
+      [item]: nuevaFoto,
     }));
-  };
+  } catch (error) {
+    console.error(
+      "ERROR SUBIENDO FOTO DE FALLA:",
+      error
+    );
 
-  lector.readAsDataURL(archivo);
+    alert(
+      error.message ||
+        "No fue posible subir la fotografía."
+    );
+  }
 };
 
   const guardarChecklist = async () => {
@@ -68,8 +107,6 @@ const pruebas = obtenerChecklist(
   return;
 }
 
-
- 
     const totalPruebas = pruebas.reduce(
       (total, grupo) => total + grupo.items.length,
       0
@@ -92,6 +129,25 @@ const serialGuardado =
 if (!serialGuardado) {
   return;
 }
+const evidenciasParaGuardar =
+  Object.fromEntries(
+    Object.entries(evidencias).map(
+      ([tipo, evidencia]) => [
+        tipo,
+        evidencia?.path || null,
+      ]
+    )
+  );
+
+const fotosFallaParaGuardar =
+  Object.fromEntries(
+    Object.entries(fotosFalla).map(
+      ([item, foto]) => [
+        item,
+        foto?.path || null,
+      ]
+    )
+  );
 
 continuarDiagnostico({
   resultados,
@@ -270,9 +326,9 @@ continuarDiagnostico({
 {fotosFalla[item] && (
   <div className="failure-photo-preview">
     <img
-      src={fotosFalla[item]}
-      alt={`Evidencia de ${item}`}
-    />
+  src={fotosFalla[item].url}
+  alt={`Evidencia de ${item}`}
+/>
 
     <button
       type="button"
@@ -298,6 +354,8 @@ continuarDiagnostico({
         <EvidenciasEquipo
           evidencias={evidencias}
           setEvidencias={setEvidencias}
+          ordenId={ordenId}
+          equipoId={equipo.id}
 />
 
         <button

@@ -1,3 +1,4 @@
+import ImagenPrivada from "../components/ImagenPrivada";
 function DetalleEquipo({
   equipo,
   orden,
@@ -8,6 +9,7 @@ function DetalleEquipo({
 
   const resultados =
     checklist?.resultados || {};
+    const fotosFalla = checklist?.fotosFalla || {};
 
   const observaciones =
     checklist?.observaciones || {};
@@ -158,42 +160,57 @@ function DetalleEquipo({
           <h3>Checklist realizado</h3>
 
           {Object.keys(resultados).length > 0 ? (
-            Object.entries(resultados).map(
-              ([prueba, resultado]) => (
-                <div
-                  className="result-row"
-                  key={prueba}
-                >
-                  <div>
-                    <strong>{prueba}</strong>
+  Object.entries(resultados).map(
+    ([prueba, resultado]) => (
+      <div
+        className="result-item"
+        key={prueba}
+      >
+        <div className="result-row">
+          <div>
+            <strong>{prueba}</strong>
 
-                    {observaciones[prueba] && (
-                      <p>
-                        {observaciones[prueba]}
-                      </p>
-                    )}
-                  </div>
+            {observaciones[prueba] && (
+              <p>
+                {observaciones[prueba]}
+              </p>
+            )}
+          </div>
 
-                  <span
-                    className={`result-badge ${
-                      resultado === "OK"
-                        ? "result-ok"
-                        : resultado === "Falla"
-                        ? "result-fail"
-                        : "result-neutral"
-                    }`}
-                  >
-                    {resultado}
-                  </span>
-                </div>
-              )
-            )
-          ) : (
-            <p className="empty-result">
-              No hay checklist almacenado para este
-              equipo.
-            </p>
+          <span
+            className={`result-badge ${
+              resultado === "OK"
+                ? "result-ok"
+                : resultado === "Falla"
+                ? "result-fail"
+                : "result-neutral"
+            }`}
+          >
+            {resultado}
+          </span>
+        </div>
+
+        {resultado === "Falla" &&
+          fotosFalla[prueba] && (
+            <div className="result-failure-photo">
+              <span>
+                Evidencia de la falla
+              </span>
+
+              <ImagenPrivada
+                path={fotosFalla[prueba]}
+                alt={`Falla detectada en ${prueba}`}
+              />
+            </div>
           )}
+      </div>
+    )
+  )
+) : (
+  <p className="empty-result">
+    No hay checklist almacenado para este equipo.
+  </p>
+)}
         </section>
 
       </main>

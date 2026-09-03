@@ -1330,6 +1330,7 @@ if (
     <Checklist
       equipo={equipoSeleccionado}
       nombreTecnico={nombreTecnico}
+      ordenId={ordenSeleccionada.id}
       volverEquipos={() => setPantalla("equipos")}
       continuarDiagnostico={continuarADiagnostico}
       guardarSerialEquipo={guardarSerialEquipo}
