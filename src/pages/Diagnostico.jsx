@@ -219,41 +219,6 @@ function Diagnostico({
 
         </section>
 
-        <section className="diagnosis-section">
-
-          <div className="photos-title">
-            <div>
-              <h3>Fotografías</h3>
-              <p>Opcional · Máximo 4</p>
-            </div>
-          </div>
-
-          <div className="photo-grid">
-
-            <button className="photo-placeholder">
-              📷
-              <span>Antes</span>
-            </button>
-
-            <button className="photo-placeholder">
-              📷
-              <span>Después</span>
-            </button>
-
-            <button className="photo-placeholder">
-              📷
-              <span>Falla</span>
-            </button>
-
-            <button className="photo-placeholder">
-              📷
-              <span>Adicional</span>
-            </button>
-
-          </div>
-
-        </section>
-
         <button
           className="continue-button"
           onClick={finalizar}

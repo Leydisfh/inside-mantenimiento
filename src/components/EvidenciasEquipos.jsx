@@ -1,5 +1,5 @@
 import { useState } from "react";
-
+import "../styles.css/evidenciasEquipos.css"
 import {
   subirEvidencia,
   eliminarEvidencia,
@@ -10,15 +10,13 @@ function EvidenciasEquipo({
   setEvidencias,
   ordenId,
   equipoId,
+  tipos,
+  titulo = "Evidencia fotográfica",
+  descripcion = "Las fotografías son opcionales.",
 }) {
   const [cargando, setCargando] = useState({});
 
-  const tipos = [
-    { id: "antes", nombre: "Antes" },
-    { id: "despues", nombre: "Después" },
-    { id: "falla", nombre: "Falla" },
-    { id: "adicional", nombre: "Adicional" },
-  ];
+
 
   const seleccionarImagen = async (
     tipo,
@@ -115,8 +113,8 @@ function EvidenciasEquipo({
   return (
     <section className="evidence-section">
       <div className="evidence-title">
-        <h3>Evidencia fotográfica</h3>
-        <p>Las fotografías son opcionales.</p>
+        <h3>{titulo}</h3>
+        <p>{descripcion}</p>
       </div>
 
       <div className="evidence-grid">

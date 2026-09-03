@@ -6,6 +6,8 @@ function DetalleEquipo({
 }) {
   const checklist = equipo.checklist;
   const diagnostico = equipo.diagnostico;
+  const evidencias =
+  checklist?.evidencias || {};
 
   const resultados =
     checklist?.resultados || {};
@@ -160,8 +162,8 @@ function DetalleEquipo({
           <h3>Checklist realizado</h3>
 
           {Object.keys(resultados).length > 0 ? (
-  Object.entries(resultados).map(
-    ([prueba, resultado]) => (
+          Object.entries(resultados).map(
+          ([prueba, resultado]) => (
       <div
         className="result-item"
         key={prueba}
@@ -212,7 +214,36 @@ function DetalleEquipo({
   </p>
 )}
         </section>
+        {Object.values(evidencias).some(Boolean) && (
+          <section className="diagnosis-section">
+            <h3>Evidencia fotográfica</h3>
 
+            <div className="evidence-detail-grid">
+              {Object.entries(evidencias).map(
+                ([tipo, imagen]) =>
+                  imagen && (
+                    <div
+                      className="evidence-detail-item"
+                      key={tipo}
+                    >
+                      <span>
+                        {tipo === "antes"
+                          ? "Estado al recibir"
+                          : tipo === "despues"
+                          ? "Después del mantenimiento"
+                          : "Evidencia adicional"}
+                      </span>
+
+                      <ImagenPrivada
+                        path={imagen}
+                        alt={`Evidencia ${tipo}`}
+                      />
+                    </div>
+                  )
+              )}
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );

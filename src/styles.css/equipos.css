@@ -408,3 +408,28 @@
   color: #8995a6;
   font-size: 12px;
 }
+/* Detalle eqipos */
+.evidence-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+  margin-top: 10px;
+}
+
+.evidence-detail-item span {
+  display: block;
+  margin-bottom: 5px;
+
+  color: #718096;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.evidence-detail-item img {
+  display: block;
+  width: 100%;
+  height: 120px;
+
+  object-fit: cover;
+  border-radius: 8px;
+}

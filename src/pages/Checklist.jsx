@@ -34,7 +34,6 @@ const pruebas = obtenerChecklist(
    const [evidencias, setEvidencias] = useState({
   antes: null,
   despues: null,
-  falla: null,
   adicional: null,
 });
 
@@ -204,6 +203,20 @@ continuarDiagnostico({
     placeholder="Ingrese el serial del equipo"
   />
 </div>
+<EvidenciasEquipo
+  evidencias={evidencias}
+  setEvidencias={setEvidencias}
+  ordenId={ordenId}
+  equipoId={equipo.id}
+  tipos={[
+    {
+      id: "antes",
+      nombre: "Estado al recibir",
+    },
+  ]}
+  titulo="Estado inicial del equipo"
+  descripcion="Puedes registrar cómo fue recibido el equipo. Fotografía opcional."
+/>
           </div>
 
           <span className="equipment-status working">
@@ -352,12 +365,23 @@ continuarDiagnostico({
           </section>
         ))}
         <EvidenciasEquipo
-          evidencias={evidencias}
-          setEvidencias={setEvidencias}
-          ordenId={ordenId}
-          equipoId={equipo.id}
+  evidencias={evidencias}
+  setEvidencias={setEvidencias}
+  ordenId={ordenId}
+  equipoId={equipo.id}
+  tipos={[
+    {
+      id: "despues",
+      nombre: "Después",
+    },
+    {
+      id: "adicional",
+      nombre: "Adicional",
+    },
+  ]}
+  titulo="Evidencia final"
+  descripcion="Puedes registrar el estado final del equipo o agregar una evidencia adicional. Fotografías opcionales."
 />
-
         <button
           className="continue-button"
           onClick={guardarChecklist}
