@@ -147,6 +147,7 @@
 
 .equipment-information {
   min-width: 0;
+  text-align: left;
 }
 
 .equipment-information strong {

@@ -465,15 +465,14 @@ setPantalla("ordenes");
     return "equipment-status pending";
   };
 
-const abrirEquipo = (equipo) => {
-  // Un equipo terminado puede ser consultado
-  // tanto por técnico como por administrador.
+const abrirEquipo = async (equipo) => {
+  // Los equipos completados solo se consultan.
   if (equipo.estado === "Completado") {
-  setEquipoSeleccionado(equipo);
-  setOrigenDetalle("equipos");
-  setPantalla("detalleEquipo");
-  return;
-}
+    setEquipoSeleccionado(equipo);
+    setOrigenDetalle("equipos");
+    setPantalla("detalleEquipo");
+    return;
+  }
 
   // El administrador no realiza mantenimiento.
   if (tipoAcceso === "administrador") {
@@ -483,7 +482,7 @@ const abrirEquipo = (equipo) => {
     return;
   }
 
-  // Bloqueo si otro técnico ya trabaja el equipo.
+  // Evitar que dos técnicos trabajen el mismo equipo.
   if (
     equipo.estado === "En proceso" &&
     equipo.tecnico !== nombreTecnico
@@ -497,18 +496,40 @@ const abrirEquipo = (equipo) => {
   let equipoActualizado = equipo;
 
   if (equipo.estado === "Pendiente") {
+    const { error } = await supabase
+      .from("equipos")
+      .update({
+        estado: "En proceso",
+        tecnico: nombreTecnico,
+      })
+      .eq("id", equipo.id);
+
+    if (error) {
+      console.error(
+        "ERROR TOMANDO EQUIPO:",
+        error
+      );
+
+      alert(
+        "No fue posible asignar el equipo. Intenta nuevamente."
+      );
+
+      return;
+    }
+
     equipoActualizado = {
       ...equipo,
       estado: "En proceso",
       tecnico: nombreTecnico,
     };
 
-    actualizarEquiposOrden((equiposActuales) =>
-      equiposActuales.map((item) =>
-        item.id === equipo.id
-          ? equipoActualizado
-          : item
-      )
+    actualizarEquiposOrden(
+      (equiposActuales) =>
+        equiposActuales.map((item) =>
+          item.id === equipo.id
+            ? equipoActualizado
+            : item
+        )
     );
   }
 
@@ -520,37 +541,146 @@ const abrirEquipo = (equipo) => {
   setPantalla("diagnostico");
 };
 
-const finalizarDiagnostico = (datosDiagnostico) => {
-  actualizarEquiposOrden((equiposActuales) =>
-    equiposActuales.map((equipo) =>
-      equipo.id === equipoSeleccionado.id
-        ? {
-            ...equipo,
+const finalizarDiagnostico = async (
+  datosDiagnostico
+) => {
+  if (!equipoSeleccionado) {
+    return;
+  }
 
-            estado: "Completado",
+  try {
+    /*
+      1. Guardar resultado técnico
+    */
 
-            tecnico:
-              nombreTecnico || "Administrador",
+    const {
+      error: errorResultado,
+    } = await supabase
+      .from("resultados_equipo")
+      .upsert(
+        {
+          equipo_id:
+            equipoSeleccionado.id,
 
-            checklist: checklistActual,
+          tecnico:
+            nombreTecnico,
 
-            diagnostico: datosDiagnostico,
+          checklist:
+            checklistActual,
 
-            fechaFinalizacion:
-              new Date().toISOString(),
-          }
-        : equipo
-    )
-  );
+          diagnostico:
+            datosDiagnostico,
 
-  setDiagnosticoActual(datosDiagnostico);
+          fecha_finalizacion:
+            new Date().toISOString(),
 
-  alert("Resultado guardado correctamente.");
+          updated_at:
+            new Date().toISOString(),
+        },
+        {
+          onConflict: "equipo_id",
+        }
+      );
 
-  setEquipoSeleccionado(null);
-  setChecklistActual(null);
+    if (errorResultado) {
+      console.error(
+        "ERROR GUARDANDO RESULTADO:",
+        errorResultado
+      );
 
-  setPantalla("equipos");
+      alert(
+        "No fue posible guardar el resultado técnico."
+      );
+
+      return;
+    }
+
+    /*
+      2. Marcar equipo como completado
+    */
+
+    const fechaFinalizacion =
+      new Date().toISOString();
+
+    const {
+      error: errorEquipo,
+    } = await supabase
+      .from("equipos")
+      .update({
+        estado: "Completado",
+        tecnico: nombreTecnico,
+        fecha_finalizacion:
+          fechaFinalizacion,
+      })
+      .eq(
+        "id",
+        equipoSeleccionado.id
+      );
+
+    if (errorEquipo) {
+      console.error(
+        "ERROR COMPLETANDO EQUIPO:",
+        errorEquipo
+      );
+
+      alert(
+        "El diagnóstico fue guardado, pero no fue posible actualizar el estado del equipo."
+      );
+
+      return;
+    }
+
+    /*
+      3. Actualizar la interfaz
+    */
+
+    actualizarEquiposOrden(
+      (equiposActuales) =>
+        equiposActuales.map((equipo) =>
+          equipo.id ===
+          equipoSeleccionado.id
+            ? {
+                ...equipo,
+
+                estado: "Completado",
+
+                tecnico:
+                  nombreTecnico,
+
+                checklist:
+                  checklistActual,
+
+                diagnostico:
+                  datosDiagnostico,
+
+                fechaFinalizacion,
+              }
+            : equipo
+        )
+    );
+
+    setDiagnosticoActual(
+      datosDiagnostico
+    );
+
+    alert(
+      "Resultado guardado correctamente."
+    );
+
+    setEquipoSeleccionado(null);
+    setChecklistActual(null);
+
+    setPantalla("equipos");
+  } catch (error) {
+    console.error(
+      "ERROR FINALIZANDO DIAGNÓSTICO:",
+      error
+    );
+
+    alert(
+      "Ocurrió un error inesperado al guardar el mantenimiento."
+    );
+  }
 };
 const crearNuevaOrden = async (
   nuevaOrden,
@@ -858,87 +988,253 @@ const crearNuevaOrden = async (
     );
   }
 };
-const guardarSerialEquipo = (serial) => {
-  if (!equipoSeleccionado) return;
+const guardarSerialEquipo = async (serial) => {
+  if (!equipoSeleccionado) return false;
+
+  const { error } = await supabase
+    .from("equipos")
+    .update({
+      serial,
+    })
+    .eq("id", equipoSeleccionado.id);
+
+  if (error) {
+    console.error(
+      "ERROR GUARDANDO SERIAL:",
+      error
+    );
+
+    alert(
+      "No fue posible guardar el número de serie."
+    );
+
+    return false;
+  }
 
   const equipoActualizado = {
     ...equipoSeleccionado,
     serial,
   };
 
-  actualizarEquiposOrden((equiposActuales) =>
-    equiposActuales.map((equipo) =>
-      equipo.id === equipoSeleccionado.id
-        ? equipoActualizado
-        : equipo
-    )
+  actualizarEquiposOrden(
+    (equiposActuales) =>
+      equiposActuales.map((equipo) =>
+        equipo.id === equipoSeleccionado.id
+          ? equipoActualizado
+          : equipo
+      )
   );
 
-  setEquipoSeleccionado(equipoActualizado);
+  setEquipoSeleccionado(
+    equipoActualizado
+  );
+
+  return true;
 };
-const agregarEquiposAOrden = ({
+const agregarEquiposAOrden = async ({
   categoria,
   modelo,
   cantidad,
 }) => {
-  if (!ordenSeleccionada) return;
+  if (!ordenSeleccionada?.id) {
+    alert(
+      "No fue posible identificar la orden en la base de datos."
+    );
+    return;
+  }
 
-  const usuario =
-    tipoAcceso === "tecnico"
-      ? nombreTecnico
-      : "Administrador";
+  try {
+    const usuario =
+      tipoAcceso === "tecnico"
+        ? nombreTecnico
+        : "Administrador";
 
-  actualizarEquiposOrden((equiposActuales) => {
-    const numerosExistentes = equiposActuales
-      .map((equipo) => {
-        if (!equipo.codigoInterno) return 0;
+    /*
+      1. Consultar los códigos actuales
+         directamente desde Supabase
+    */
 
-        const numero = Number(
-          equipo.codigoInterno.replace("EQ-", "")
-        );
+    const {
+      data: equiposExistentes,
+      error: errorConsulta,
+    } = await supabase
+      .from("equipos")
+      .select("codigo_interno")
+      .eq(
+        "orden_id",
+        ordenSeleccionada.id
+      );
 
-        return Number.isNaN(numero)
-          ? 0
-          : numero;
-      });
+    if (errorConsulta) {
+      console.error(
+        "ERROR CONSULTANDO EQUIPOS:",
+        errorConsulta
+      );
+
+      alert(
+        "No fue posible consultar los equipos actuales."
+      );
+
+      return;
+    }
+
+    /*
+      2. Encontrar el último número EQ
+    */
+
+    const numerosExistentes =
+      (equiposExistentes || []).map(
+        (equipo) => {
+          const numero = Number(
+            equipo.codigo_interno?.replace(
+              "EQ-",
+              ""
+            )
+          );
+
+          return Number.isNaN(numero)
+            ? 0
+            : numero;
+        }
+      );
 
     const ultimoNumero =
       numerosExistentes.length > 0
         ? Math.max(...numerosExistentes)
         : 0;
 
-    const nuevosEquipos = Array.from(
-      { length: cantidad },
-      (_, index) => ({
-        id: Date.now() + index,
+    /*
+      3. Preparar equipos nuevos
+    */
 
-        codigoInterno: `EQ-${String(
-          ultimoNumero + index + 1
-        ).padStart(3, "0")}`,
+    const fechaAgregado =
+      new Date().toISOString();
 
-        categoria,
-        modelo,
-        serial: "",
-        tecnico: "",
-        estado: "Pendiente",
+    const equiposNuevos =
+      Array.from(
+        { length: cantidad },
+        (_, index) => ({
+          orden_id:
+            ordenSeleccionada.id,
 
-        origen: "Adicional",
-        agregadoPor: usuario,
-        fechaAgregado: new Date().toISOString(),
-      })
+          codigo_interno: `EQ-${String(
+            ultimoNumero + index + 1
+          ).padStart(3, "0")}`,
+
+          categoria,
+
+          modelo,
+
+          serial: null,
+
+          tecnico: null,
+
+          estado: "Pendiente",
+
+          origen: "Adicional",
+
+          agregado_por: usuario,
+
+          fecha_agregado:
+            fechaAgregado,
+        })
+      );
+
+    /*
+      4. Guardar en Supabase
+    */
+
+    const {
+      data: equiposGuardados,
+      error: errorGuardar,
+    } = await supabase
+      .from("equipos")
+      .insert(equiposNuevos)
+      .select();
+
+    if (errorGuardar) {
+      console.error(
+        "ERROR AGREGANDO EQUIPOS:",
+        errorGuardar
+      );
+
+      alert(
+        "No fue posible agregar los equipos a la orden."
+      );
+
+      return;
+    }
+
+    /*
+      5. Convertirlos al formato de React
+    */
+
+    const equiposParaApp =
+      equiposGuardados.map(
+        (equipo) => ({
+          id: equipo.id,
+
+          codigoInterno:
+            equipo.codigo_interno,
+
+          categoria:
+            equipo.categoria,
+
+          modelo:
+            equipo.modelo,
+
+          serial:
+            equipo.serial || "",
+
+          tecnico:
+            equipo.tecnico || "",
+
+          estado:
+            equipo.estado,
+
+          origen:
+            equipo.origen,
+
+          agregadoPor:
+            equipo.agregado_por,
+
+          fechaAgregado:
+            equipo.fecha_agregado,
+
+          checklist: null,
+
+          diagnostico: null,
+
+          fechaFinalizacion: null,
+        })
+      );
+
+    /*
+      6. Actualizar la pantalla
+    */
+
+    actualizarEquiposOrden(
+      (equiposActuales) => [
+        ...equiposActuales,
+        ...equiposParaApp,
+      ]
     );
 
-    return [
-      ...equiposActuales,
-      ...nuevosEquipos,
-    ];
-  });
+    alert(
+      `${cantidad} equipo(s) agregado(s) correctamente.`
+    );
 
-  alert(
-    `${cantidad} equipo(s) agregado(s) correctamente.`
-  );
+    setPantalla("equipos");
+  } catch (error) {
+    console.error(
+      "ERROR INESPERADO AGREGANDO EQUIPOS:",
+      error
+    );
 
-  setPantalla("equipos");
+    alert(
+      "Ocurrió un error inesperado al agregar los equipos."
+    );
+  }
 };
 const abrirResumenOrden = () => {
   setPantalla("resumenOrden");

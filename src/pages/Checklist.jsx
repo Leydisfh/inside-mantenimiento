@@ -60,14 +60,14 @@ const pruebas = obtenerChecklist(
   lector.readAsDataURL(archivo);
 };
 
-  const guardarChecklist = () => {
+  const guardarChecklist = async () => {
     if (!serialEquipo.trim()) {
   alert(
     "Ingresa el número de serie del equipo antes de continuar."
   );
   return;
 }
-guardarSerialEquipo(serialEquipo.trim());
+
 
  
     const totalPruebas = pruebas.reduce(
@@ -84,7 +84,16 @@ guardarSerialEquipo(serialEquipo.trim());
       return;
     }
 
-  continuarDiagnostico({
+const serialGuardado =
+  await guardarSerialEquipo(
+    serialEquipo.trim()
+  );
+
+if (!serialGuardado) {
+  return;
+}
+
+continuarDiagnostico({
   resultados,
   observaciones,
   evidencias,
