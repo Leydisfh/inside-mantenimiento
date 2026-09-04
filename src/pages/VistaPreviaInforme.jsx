@@ -1,10 +1,8 @@
 import "../styles.css/vistaPreviaInforme.css"
 import { useState } from "react";
-
-
-import {
-  generarInformePDF,
+import {generarInformePDF,
 } from "../lib/generarInformePDF";
+
 function VistaPreviaInforme({
   orden,
   equipos,
@@ -44,17 +42,21 @@ const descargarPDF = async (e) => {
   e.preventDefault();
   e.stopPropagation();
 
+  console.log(
+    "INICIANDO GENERADOR COMPLETO DEL PDF"
+  );
+
   try {
     setGenerandoPDF(true);
-
-    console.log("INICIANDO GENERACION PDF");
 
     await generarInformePDF(
       orden,
       equipos
     );
 
-    console.log("PDF GENERADO");
+    console.log(
+      "PDF COMPLETO GENERADO"
+    );
   } catch (error) {
     console.error(
       "ERROR GENERANDO PDF:",
