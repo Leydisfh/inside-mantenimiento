@@ -602,6 +602,18 @@ useEffect(() => {
   };
 
 const abrirEquipo = async (equipo) => {
+  const ordenCerrada =
+  ordenSeleccionada?.estado === "Cerrada";
+
+if (ordenCerrada) {
+  if (equipo.estado === "Completado") {
+    setEquipoSeleccionado(equipo);
+    setOrigenDetalle("equipos");
+    setPantalla("detalleEquipo");
+  }
+
+  return;
+}
   // Los equipos completados solo se consultan.
   if (equipo.estado === "Completado") {
     setEquipoSeleccionado(equipo);
@@ -1395,6 +1407,37 @@ const generarInformeYCerrarOrden = async (
     );
     return;
   }
+  const generarInformeOrdenCerrada = async (
+  equiposOrden
+) => {
+  if (!ordenSeleccionada) return;
+
+  if (
+    !equiposOrden ||
+    equiposOrden.length === 0
+  ) {
+    alert(
+      "No se encontraron equipos para generar el informe."
+    );
+    return;
+  }
+
+  try {
+    await generarInformePDF(
+      ordenSeleccionada,
+      equiposOrden
+    );
+  } catch (error) {
+    console.error(
+      "ERROR GENERANDO INFORME:",
+      error
+    );
+
+    alert(
+      "No fue posible generar el informe."
+    );
+  }
+};
 
   const confirmar = window.confirm(
     `¿Deseas generar el informe y cerrar la orden ${ordenSeleccionada.numero}?`
@@ -1457,13 +1500,47 @@ const generarInformeYCerrarOrden = async (
     alert(
       "No fue posible completar el proceso."
     );
+    
+  }
+  
+};
+const generarInformeOrdenCerrada = async (
+  equiposOrden
+) => {
+  if (!ordenSeleccionada) return;
+
+  if (
+    !equiposOrden ||
+    equiposOrden.length === 0
+  ) {
+    alert(
+      "No se encontraron equipos para generar el informe."
+    );
+    return;
+  }
+
+  try {
+    await generarInformePDF(
+      ordenSeleccionada,
+      equiposOrden
+    );
+  } catch (error) {
+    console.error(
+      "ERROR GENERANDO INFORME:",
+      error
+    );
+
+    alert(
+      "No fue posible generar el informe."
+    );
   }
 };
  {
   if (
   pantalla === "resumenOrden" &&
   ordenSeleccionada
-) {
+) 
+{
   return (
     <ResumenOrden
   orden={ordenSeleccionada}
@@ -1476,6 +1553,11 @@ const generarInformeYCerrarOrden = async (
   }
 generarInforme={() =>
   generarInformeYCerrarOrden(
+    equipos
+  )
+}
+generarInformeCerrado={() =>
+  generarInformeOrdenCerrada(
     equipos
   )
 }

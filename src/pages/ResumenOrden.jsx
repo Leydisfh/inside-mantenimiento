@@ -5,7 +5,15 @@ function ResumenOrden({
   volver,
   verEquipo,
   generarInforme,
+  generarInformeCerrado,
 }) {
+  const ordenCerrada =
+  orden?.estado === "Cerrada";
+  {ordenCerrada && (
+  <div className="closed-order-notice">
+    Orden cerrada · Solo consulta
+  </div>
+)}
   const total = equipos.length;
 
   const completados = equipos.filter(
@@ -296,14 +304,25 @@ function ResumenOrden({
             </div>
           )}
         </section>
-{ordenCompleta && (
-<button
-  type="button"
-  className="review-order-button"
-  onClick={generarInforme}
->
-  Generar informe y cerrar orden
-</button>
+{ordenCompleta && !ordenCerrada && (
+  <button
+    type="button"
+    className="generate-report-button"
+    onClick={generarInforme}
+  >
+    Generar informe y cerrar orden
+  </button>
+)}
+{ordenCerrada && (
+  <button
+    type="button"
+    className="new-order-button"
+    onClick={
+      generarInformeCerrado
+    }
+  >
+    Generar informe PDF
+  </button>
 )}
 {!ordenCompleta && (
   <div className="report-disabled-message">

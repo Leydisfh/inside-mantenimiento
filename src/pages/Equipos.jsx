@@ -12,8 +12,9 @@ export function Equipos({
   revisarOrden
 
 }
-
 ) {
+  const ordenCerrada =
+    ordenSeleccionada?.estado === "Cerrada";
   const [filtro, setFiltro] = useState("Todos");
   const [busqueda, setBusqueda] = useState("");
   const totalEquipos = equipos.length;
@@ -81,19 +82,21 @@ const listaParaCerrar =
       <main className="mobile-container">
 
         <header className="equipment-header">
-
-          <button
+           <button
             className="back-button"
             onClick={volverOrdenes}
           >
             ←
           </button>
-
+            {ordenCerrada && (
+              <div className="closed-order-notice">
+                Orden cerrada·
+              </div>
+)}    
           <div>
             <strong>
               {ordenSeleccionada.numero}
             </strong>
-
             <span>
               {ordenSeleccionada.cliente} ·{" "}
               {ordenSeleccionada.ubicacion}
@@ -101,9 +104,7 @@ const listaParaCerrar =
           </div>
 
         </header>
-
         <section className="equipment-summary">
-
           <div className="summary-box">
   <strong>{totalEquipos}</strong>
   <span>Equipos</span>
@@ -182,12 +183,13 @@ const listaParaCerrar =
 
 
         </div>
+        {!ordenCerrada && (
     <button
         className="add-found-equipment-button"
         onClick={agregarEquipo} >
         + Agregar equipo 
     </button>
-
+)}
         <section className="equipment-list">
 
           {equiposFiltrados.map((equipo) => (
