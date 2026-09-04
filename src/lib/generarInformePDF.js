@@ -415,6 +415,66 @@ console.log(
 
   return y;
 };
+const iniciarPaginaSeccion = (
+  doc,
+  orden,
+  titulo
+) => {
+  const yInicial = 18;
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setFontSize(7.5);
+
+  doc.setTextColor(
+    110,
+    120,
+    135
+  );
+
+  doc.text(
+    `Inside Panamá · ${orden.numero}`,
+    margen,
+    yInicial
+  );
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setFontSize(15);
+
+  doc.setTextColor(
+    16,
+    41,
+    75
+  );
+
+  doc.text(
+    titulo,
+    margen,
+    yInicial + 11
+  );
+
+  doc.setDrawColor(
+    215,
+    223,
+    232
+  );
+
+  doc.line(
+    margen,
+    yInicial + 16,
+    anchoPagina - margen,
+    yInicial + 16
+  );
+
+  return yInicial + 28;
+};
 
 export const generarInformePDF = async (
   orden,
@@ -457,11 +517,24 @@ export const generarInformePDF = async (
         "Fuera de servicio"
     );
 
-  const atencion = [
-    ...fueraServicio,
-    ...reparacion,
-    ...conObservaciones,
-  ];
+  const atencion = completados.filter(
+  (equipo) =>
+    [
+      "Operativo con observaciones",
+      "Requiere reparación",
+      "Fuera de servicio",
+    ].includes(
+      equipo.diagnostico?.estadoFinal
+    )
+);console.log(
+  "EQUIPOS QUE IRÁN A PÁGINAS DE ATENCIÓN:",
+  atencion.map((equipo) => ({
+    modelo: equipo.modelo,
+    serial: equipo.serial,
+    estado:
+      equipo.diagnostico?.estadoFinal,
+  }))
+);
   
  let y = 18;
 
@@ -525,16 +598,10 @@ doc.line(
   y + 21
 );
 
-y += 32;
+y += 35;
 
   // INFORMACIÓN GENERAL
 
-  y = agregarTitulo(
-    doc,
-    "Información del servicio",
-    y,
-    orden
-  );
 
   y = agregarCampo(
     doc,
@@ -589,96 +656,186 @@ y += 32;
     orden
   );
 
-  const resumen = [
-    ["Total de equipos", equipos.length],
-    ["Operativos", operativos.length],
-    [
-      "Operativos con observaciones",
-      conObservaciones.length,
-    ],
-    [
-      "Requieren reparación",
-      reparacion.length,
-    ],
-    [
-      "Fuera de servicio",
-      fueraServicio.length,
-    ],
-  ];
+ const resumen = [
+  {
+    nombre: "Total",
+    cantidad: equipos.length,
+  },
+  {
+    nombre: "Operativos",
+    cantidad: operativos.length,
+  },
+  {
+    nombre: "Con observaciones",
+    cantidad: conObservaciones.length,
+  },
+  {
+    nombre: "Reparación",
+    cantidad: reparacion.length,
+  },
+  {
+    nombre: "Fuera de servicio",
+    cantidad: fueraServicio.length,
+  },
+];
 
-  resumen.forEach(
-    ([nombre, cantidad]) => {
-      y = asegurarEspacio(
-        doc,
-        y,
-        7,
-        orden
-      );
+y = asegurarEspacio(
+  doc,
+  y,
+  30,
+  orden
+);
 
-      doc.setFont(
-        "helvetica",
-        "normal"
-      );
+const anchoCaja = 34;
+const espacioCaja = 2.5;
+const altoCaja = 22;
 
-      doc.setFontSize(9);
-      doc.setTextColor(
-        80,
-        95,
-        112
-      );
+resumen.forEach(
+  (item, indice) => {
+    const x =
+      margen +
+      indice *
+        (anchoCaja + espacioCaja);
 
-      doc.text(nombre, margen, y);
-
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      doc.setTextColor(
-        16,
-        41,
-        75
-      );
-
-      doc.text(
-        String(cantidad),
-        anchoPagina - margen,
-        y,
-        {
-          align: "right",
-        }
-      );
-
-      y += 6;
-    }
-  );
-
-  // EQUIPOS CON ATENCIÓN
-
-  y += 5;
-
-  y = agregarTitulo(
-    doc,
-    "Equipos que requieren atención",
-    y,
-    orden
-  );
-
-  if (atencion.length === 0) {
-    doc.setFontSize(9);
-    doc.setTextColor(8, 124, 103);
-
-    doc.text(
-      "No se registraron equipos con incidencias.",
-      margen,
-      y
+    doc.setFillColor(
+      246,
+      248,
+      251
     );
 
-    y += 10;
-  }
+    doc.setDrawColor(
+      220,
+      226,
+      233
+    );
 
-  for (const equipo of atencion) {
-    for (const equipo of atencion) {
+    doc.roundedRect(
+      x,
+      y,
+      anchoCaja,
+      altoCaja,
+      2,
+      2,
+      "FD"
+    );
+
+    doc.setFont(
+      "helvetica",
+      "bold"
+    );
+
+    doc.setFontSize(14);
+
+    doc.setTextColor(
+      16,
+      41,
+      75
+    );
+
+    doc.text(
+      String(item.cantidad),
+      x + anchoCaja / 2,
+      y + 9,
+      {
+        align: "center",
+      }
+    );
+
+    doc.setFont(
+      "helvetica",
+      "normal"
+    );
+
+    doc.setFontSize(6.5);
+
+    doc.setTextColor(
+      100,
+      112,
+      128
+    );
+
+    const lineas =
+      doc.splitTextToSize(
+        item.nombre,
+        anchoCaja - 4
+      );
+
+    doc.text(
+      lineas,
+      x + anchoCaja / 2,
+      y + 15,
+      {
+        align: "center",
+      }
+    );
+  }
+);
+
+y += altoCaja + 10;
+if (atencion.length === 0) {
+  y += 5;
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setFontSize(10);
+
+  doc.setTextColor(
+    8,
+    124,
+    103
+  );
+
+  doc.text(
+    "Resultado general",
+    margen,
+    y
+  );
+
+  y += 7;
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setFontSize(9);
+
+  doc.setTextColor(
+    80,
+    95,
+    112
+  );
+
+  doc.text(
+    "No se registraron equipos que requieran atención adicional.",
+    margen,
+    y
+  );
+}
+// =====================================
+// EQUIPOS CON ATENCIÓN
+// =====================================
+
+for (
+  let indiceEquipo = 0;
+  indiceEquipo < atencion.length;
+  indiceEquipo += 1
+) {
+  const equipo = atencion[indiceEquipo];
+
+  // Cada equipo que requiere atención
+  // comienza en una página nueva
+  doc.addPage();
+
+  y = iniciarPaginaSeccion(
+    doc,
+    orden,
+    "Equipo que requiere atención"
+  );
+
   const diagnostico =
     equipo.diagnostico || {};
 
@@ -697,29 +854,422 @@ y += 32;
   const observaciones =
     checklist.observaciones || {};
 
-  // aquí continúa el resto
-  // del código del equipo
+  // -------------------------------------
+  // IDENTIFICACIÓN DEL EQUIPO
+  // -------------------------------------
+
+  y = asegurarEspacio(
+    doc,
+    y,
+    35,
+    orden
+  );
+
+  doc.setFillColor(
+    246,
+    248,
+    251
+  );
+
+  doc.roundedRect(
+    margen,
+    y,
+    180,
+    17,
+    2,
+    2,
+    "F"
+  );
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setFontSize(10);
+
+  doc.setTextColor(
+    16,
+    41,
+    75
+  );
+
+  doc.text(
+    equipo.modelo || "Equipo",
+    margen + 4,
+    y + 6
+  );
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setFontSize(8);
+
+  doc.setTextColor(
+    110,
+    120,
+    135
+  );
+
+  doc.text(
+    `SN: ${
+      equipo.serial ||
+      "No registrado"
+    }`,
+    margen + 4,
+    y + 12
+  );
+
+  // Estado del equipo
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setFontSize(8.5);
+
+  if (
+    diagnostico.estadoFinal ===
+    "Operativo con observaciones"
+  ) {
+    doc.setTextColor(
+      180,
+      120,
+      25
+    );
+  } else {
+    doc.setTextColor(
+      166,
+      66,
+      66
+    );
+  }
+
+  doc.text(
+    diagnostico.estadoFinal ||
+      "",
+    anchoPagina - margen - 4,
+    y + 9,
+    {
+      align: "right",
+    }
+  );
+
+  y += 25;
+
+  // -------------------------------------
+  // DIAGNÓSTICO
+  // -------------------------------------
+
+  if (diagnostico.diagnostico) {
+    y = agregarCampo(
+      doc,
+      "Diagnóstico",
+      diagnostico.diagnostico,
+      y,
+      orden
+    );
+  }
+
+  if (
+    diagnostico.fallaDetectada
+  ) {
+    y = agregarCampo(
+      doc,
+      "Falla detectada",
+      diagnostico.fallaDetectada,
+      y,
+      orden
+    );
+  }
+
+  if (diagnostico.repuesto) {
+    y = agregarCampo(
+      doc,
+      "Repuesto requerido",
+      diagnostico.repuesto,
+      y,
+      orden
+    );
+  }
+
+  if (
+    diagnostico.recomendacion
+  ) {
+    y = agregarCampo(
+      doc,
+      "Recomendación",
+      diagnostico.recomendacion,
+      y,
+      orden
+    );
+  }
+
+  y = agregarCampo(
+    doc,
+    "Prioridad",
+    diagnostico.prioridad ||
+      "No definida",
+    y,
+    orden
+  );
+
+  y = agregarCampo(
+    doc,
+    "Técnico",
+    equipo.tecnico ||
+      "No registrado",
+    y,
+    orden
+  );
+
+  // -------------------------------------
+  // HALLAZGOS DEL CHECKLIST
+  // -------------------------------------
+
+  const fallas =
+    Object.entries(
+      resultados
+    ).filter(
+      ([, resultado]) =>
+        resultado === "Falla"
+    );
+
+  if (fallas.length > 0) {
+    y += 8;
+
     y = asegurarEspacio(
       doc,
       y,
-      35,
+      15,
       orden
     );
 
+    doc.setFont(
+      "helvetica",
+      "bold"
+    );
+
+    doc.setFontSize(9);
+
+    doc.setTextColor(
+      16,
+      41,
+      75
+    );
+
+    doc.text(
+      "Hallazgos del checklist",
+      margen,
+      y
+    );
+
+    y += 9;
+
+    for (
+      const [prueba] of fallas
+    ) {
+      y = asegurarEspacio(
+        doc,
+        y,
+        14,
+        orden
+      );
+
+      doc.setFont(
+        "helvetica",
+        "bold"
+      );
+
+      doc.setFontSize(8.5);
+
+      doc.setTextColor(
+        166,
+        66,
+        66
+      );
+
+      const pruebaLineas =
+        doc.splitTextToSize(
+          `• ${prueba}`,
+          175
+        );
+
+      doc.text(
+        pruebaLineas,
+        margen + 3,
+        y
+      );
+
+      y +=
+        pruebaLineas.length *
+          4.5 +
+        2;
+
+      if (
+        observaciones[prueba]
+      ) {
+        doc.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        doc.setFontSize(8);
+
+        doc.setTextColor(
+          100,
+          112,
+          128
+        );
+
+        const lineas =
+          doc.splitTextToSize(
+            observaciones[
+              prueba
+            ],
+            168
+          );
+
+        doc.text(
+          lineas,
+          margen + 7,
+          y
+        );
+
+        y +=
+          lineas.length * 4 +
+          5;
+      }
+    }
+  }
+
+  // -------------------------------------
+  // EVIDENCIAS FOTOGRÁFICAS
+  // -------------------------------------
+
+  const imagenesEquipo = [];
+
+  if (evidencias.antes) {
+    imagenesEquipo.push({
+      nombre:
+        "Estado al recibir",
+      evidencia:
+        evidencias.antes,
+    });
+  }
+
+  Object.entries(
+    fotosFalla
+  ).forEach(
+    ([prueba, fotografia]) => {
+      if (fotografia) {
+        imagenesEquipo.push({
+          nombre:
+            `Falla: ${prueba}`,
+          evidencia:
+            fotografia,
+        });
+      }
+    }
+  );
+
+  if (evidencias.despues) {
+    imagenesEquipo.push({
+      nombre:
+        "Después del mantenimiento",
+      evidencia:
+        evidencias.despues,
+    });
+  }
+
+  if (evidencias.adicional) {
+    imagenesEquipo.push({
+      nombre:
+        "Evidencia adicional",
+      evidencia:
+        evidencias.adicional,
+    });
+  }
+
+  if (
+    imagenesEquipo.length > 0
+  ) {
+    y += 5;
+
+    y =
+      await agregarEvidenciasPDF(
+        doc,
+        imagenesEquipo,
+        y,
+        orden
+      );
+  }
+
+  y += 7;
+
+} // <- AQUÍ TERMINA EL FOR DE EQUIPOS CON ATENCIÓN
+
+
+// =====================================
+// EQUIPOS OPERATIVOS
+// =====================================
+
+if (operativos.length > 0) {
+  doc.addPage();
+
+  y = iniciarPaginaSeccion(
+    doc,
+    orden,
+    "Equipos operativos"
+  );
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setFontSize(8);
+
+  doc.setTextColor(
+    100,
+    112,
+    128
+  );
+
+  doc.text(
+    "Equipos que finalizaron el servicio sin observaciones técnicas.",
+    margen,
+    y
+  );
+
+  y += 10;
+
+  for (
+    const equipo of operativos
+  ) {
+    y = asegurarEspacio(
+      doc,
+      y,
+      12,
+      orden
+    );
 
     doc.setFillColor(
-      246,
       248,
-      251
+      250,
+      252
     );
 
     doc.roundedRect(
       margen,
-      y,
+      y - 4,
       180,
-      17,
-      2,
-      2,
+      10,
+      1.5,
+      1.5,
       "F"
     );
 
@@ -728,17 +1278,19 @@ y += 32;
       "bold"
     );
 
-    doc.setFontSize(10);
+    doc.setFontSize(8.5);
+
     doc.setTextColor(
-      16,
-      41,
-      75
+      35,
+      55,
+      78
     );
 
     doc.text(
-      equipo.modelo,
-      margen + 4,
-      y + 6
+      equipo.modelo ||
+        "Equipo",
+      margen + 3,
+      y + 2
     );
 
     doc.setFont(
@@ -746,7 +1298,6 @@ y += 32;
       "normal"
     );
 
-    doc.setFontSize(8);
     doc.setTextColor(
       110,
       120,
@@ -758,8 +1309,8 @@ y += 32;
         equipo.serial ||
         "No registrado"
       }`,
-      margen + 4,
-      y + 12
+      90,
+      y + 2
     );
 
     doc.setFont(
@@ -768,353 +1319,25 @@ y += 32;
     );
 
     doc.setTextColor(
-      166,
-      66,
-      66
+      8,
+      124,
+      103
     );
 
     doc.text(
-      diagnostico.estadoFinal ||
-        "",
-      anchoPagina - margen - 4,
-      y + 9,
+      "Operativo",
+      anchoPagina -
+        margen -
+        3,
+      y + 2,
       {
         align: "right",
       }
     );
 
-    y += 23;
-
-    if (diagnostico.diagnostico) {
-      y = agregarCampo(
-        doc,
-        "Diagnóstico",
-        diagnostico.diagnostico,
-        y,
-        orden
-      );
-    }
-
-    if (
-      diagnostico.fallaDetectada
-    ) {
-      y = agregarCampo(
-        doc,
-        "Falla detectada",
-        diagnostico.fallaDetectada,
-        y,
-        orden
-      );
-    }
-
-    if (diagnostico.repuesto) {
-      y = agregarCampo(
-        doc,
-        "Repuesto requerido",
-        diagnostico.repuesto,
-        y,
-        orden
-      );
-    }
-
-    if (
-      diagnostico.recomendacion
-    ) {
-      y = agregarCampo(
-        doc,
-        "Recomendación",
-        diagnostico.recomendacion,
-        y,
-        orden
-      );
-    }
-
-    y = agregarCampo(
-      doc,
-      "Prioridad",
-      diagnostico.prioridad ||
-        "No definida",
-      y,
-      orden
-    );
-
-    y = agregarCampo(
-      doc,
-      "Técnico",
-      equipo.tecnico ||
-        "No registrado",
-      y,
-      orden
-    );
-
-    /*
-      Mostrar únicamente los puntos
-      del checklist que fallaron.
-    */
-
-
-    const fallas = Object.entries(
-      resultados
-    ).filter(
-      ([, resultado]) =>
-        resultado === "Falla"
-    );
-
-    if (fallas.length > 0) {
-      y += 3;
-
-      y = asegurarEspacio(
-        doc,
-        y,
-        10,
-        orden
-      );
-
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      doc.setFontSize(9);
-      doc.setTextColor(
-        16,
-        41,
-        75
-      );
-
-      doc.text(
-        "Hallazgos del checklist",
-        margen,
-        y
-      );
-
-      y += 8;
-
-      for (
-        const [prueba] of fallas
-      ) {
-        y = asegurarEspacio(
-          doc,
-          y,
-          12,
-          orden
-        );
-
-        doc.setFont(
-          "helvetica",
-          "bold"
-        );
-
-        doc.setFontSize(8.5);
-        doc.setTextColor(
-          166,
-          66,
-          66
-        );
-
-        const pruebaLineas =
-          doc.splitTextToSize(
-            `• ${prueba}`,
-            175
-          );
-
-        doc.text(
-          pruebaLineas,
-          margen + 3,
-          y
-        );
-
-        y +=
-          pruebaLineas.length * 4;
-
-        if (
-          observaciones[prueba]
-        ) {
-          doc.setFont(
-            "helvetica",
-            "normal"
-          );
-
-          doc.setFontSize(8);
-          doc.setTextColor(
-            100,
-            112,
-            128
-          );
-
-          const lineas =
-            doc.splitTextToSize(
-              observaciones[
-                prueba
-              ],
-              168
-            );
-
-          doc.text(
-            lineas,
-            margen + 7,
-            y
-          );
-
-          y +=
-            lineas.length * 4 +
-            3;
-        }
-      }
-    
-    }
-   
-
-
-const imagenesEquipo = [];
-
-if (evidencias.antes) {
-  imagenesEquipo.push({
-    nombre: "Estado al recibir",
-    evidencia: evidencias.antes,
-  });
-}
-
-Object.entries(
-  fotosFalla
-).forEach(
-  ([prueba, fotografia]) => {
-    if (fotografia) {
-      imagenesEquipo.push({
-        nombre: `Falla: ${prueba}`,
-        evidencia: fotografia,
-      });
-    }
+    y += 13;
   }
-);
-
-if (evidencias.despues) {
-  imagenesEquipo.push({
-    nombre:
-      "Después del mantenimiento",
-    evidencia:
-      evidencias.despues,
-  });
 }
-
-if (evidencias.adicional) {
-  imagenesEquipo.push({
-    nombre:
-      "Evidencia adicional",
-    evidencia:
-      evidencias.adicional,
-  });
-}
-
-y = await agregarEvidenciasPDF(
-  doc,
-  imagenesEquipo,
-  y,
-  orden
-);
-
-y += 7;
-    
-
-    y += 7;
-  }
-  
-
-  // EQUIPOS OPERATIVOS
-
-  y = agregarTitulo(
-    doc,
-    "Equipos operativos",
-    y,
-    orden
-  );
-
-  if (operativos.length === 0) {
-    doc.setFontSize(9);
-    doc.setTextColor(
-      110,
-      120,
-      135
-    );
-
-    doc.text(
-      "No hay equipos clasificados como operativos.",
-      margen,
-      y
-    );
-  } else {
-    for (
-      const equipo of operativos
-    ) {
-      y = asegurarEspacio(
-        doc,
-        y,
-        9,
-        orden
-      );
-
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      doc.setFontSize(8.5);
-      doc.setTextColor(
-        35,
-        55,
-        78
-      );
-
-      doc.text(
-        equipo.modelo,
-        margen,
-        y
-      );
-
-      doc.setFont(
-        "helvetica",
-        "normal"
-      );
-
-      doc.setTextColor(
-        110,
-        120,
-        135
-      );
-
-      doc.text(
-        `SN: ${
-          equipo.serial ||
-          "No registrado"
-        }`,
-        90,
-        y
-      );
-
-      doc.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      doc.setTextColor(
-        8,
-        124,
-        103
-      );
-
-      doc.text(
-        "Operativo",
-        anchoPagina - margen,
-        y,
-        {
-          align: "right",
-        }
-      );
-
-      y += 7;
-    }
-  }
-
   // PIE DE PÁGINA
 
   const totalPaginas =
@@ -1174,4 +1397,4 @@ y += 7;
     )}.pdf`;
 
   doc.save(nombre);
-};}
+}
