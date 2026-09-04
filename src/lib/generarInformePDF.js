@@ -367,7 +367,7 @@ console.log(
       const titulo =
         doc.splitTextToSize(
           item.nombre,
-          82
+          50
         );
 
       doc.text(
@@ -376,8 +376,8 @@ console.log(
         y
       );
 
-      const maxWidth = 82;
-      const maxHeight = 43;
+      const maxWidth = 50;
+      const maxHeight = 35;
 
       const relacion =
         item.imagen.width /
@@ -772,6 +772,121 @@ resumen.forEach(
 );
 
 y += altoCaja + 10;
+// =====================================
+// RESULTADO GENERAL DEL SERVICIO
+// =====================================
+
+y += 6;
+
+y = agregarTitulo(
+  doc,
+  "Resultado general",
+  y,
+  orden
+);
+
+const textoResultado =
+  `Se evaluaron ${completados.length} equipos. 
+  `+ `${operativos.length} finalizaron operativos sin observaciones, 
+  `+`${conObservaciones.length} operativos con observaciones, 
+  `+`${reparacion.length} requieren reparación y 
+  `+`${fueraServicio.length} quedaron fuera de servicio.`;
+
+const lineasResultado =
+  doc.splitTextToSize(
+    textoResultado,
+    175
+  );
+
+doc.setFont(
+  "helvetica",
+  "normal"
+);
+
+doc.setFontSize(10);
+
+doc.setTextColor(
+  70,
+  85,
+  105
+);
+
+doc.text(
+  lineasResultado,
+  margen,
+  y
+);
+
+y +=
+  lineasResultado.length * 5 +
+  5;
+  if (atencion.length > 0) {
+  y += 3;
+
+  doc.setFillColor(
+    248,
+    250,
+    252
+  );
+
+  doc.setDrawColor(
+    220,
+    226,
+    233
+  );
+
+  doc.roundedRect(
+    margen,
+    y,
+    180,
+    18,
+    2,
+    2,
+    "FD"
+  );
+
+  doc.setFont(
+    "helvetica",
+    "bold"
+  );
+
+  doc.setFontSize(10);
+
+  doc.setTextColor(
+    16,
+    41,
+    75
+  );
+
+  doc.text(
+    "Detalle técnico",
+    margen + 5,
+    y + 7
+  );
+
+  doc.setFont(
+    "helvetica",
+    "normal"
+  );
+
+  doc.setFontSize(10);
+
+  doc.setTextColor(
+    100,
+    112,
+    128
+  );
+
+  doc.text(
+    `${atencion.length} equipo${
+      atencion.length !== 1 ? "s" : ""
+    } requieren atención y se detallan en las páginas siguientes.`,
+    margen + 5,
+    y + 13
+  );
+
+  y += 24;
+}
 if (atencion.length === 0) {
   y += 5;
 
@@ -801,7 +916,7 @@ if (atencion.length === 0) {
     "normal"
   );
 
-  doc.setFontSize(9);
+  doc.setFontSize(10);
 
   doc.setTextColor(
     80,
@@ -833,7 +948,7 @@ for (
   y = iniciarPaginaSeccion(
     doc,
     orden,
-    "Equipo que requiere atención"
+    "Detalle técnico del equipo"
   );
 
   const diagnostico =
@@ -858,121 +973,214 @@ for (
   // IDENTIFICACIÓN DEL EQUIPO
   // -------------------------------------
 
-  y = asegurarEspacio(
-    doc,
-    y,
-    35,
-    orden
-  );
+ // -------------------------------------
+// IDENTIFICACIÓN DEL EQUIPO
+// -------------------------------------
 
-  doc.setFillColor(
-    246,
-    248,
-    251
-  );
+y = asegurarEspacio(
+  doc,
+  y,
+  35,
+  orden
+);
 
-  doc.roundedRect(
-    margen,
-    y,
+doc.setFillColor(
+  246,
+  248,
+  251
+);
+
+doc.setDrawColor(
+  220,
+  226,
+  233
+);
+
+doc.roundedRect(
+  margen,
+  y,
+  180,
+  28,
+  2,
+  2,
+  "FD"
+);
+
+// Modelo
+
+doc.setFont(
+  "helvetica",
+  "bold"
+);
+
+doc.setFontSize(11);
+
+doc.setTextColor(
+  16,
+  41,
+  75
+);
+
+doc.text(
+  equipo.modelo || "Equipo",
+  margen + 5,
+  y + 7
+);
+
+// Categoría
+
+doc.setFont(
+  "helvetica",
+  "normal"
+);
+
+doc.setFontSize(7.5);
+
+doc.setTextColor(
+  110,
+  120,
+  135
+);
+
+doc.text(
+  equipo.categoria ||
+    "Sin categoría",
+  margen + 5,
+  y + 13
+);
+
+// Serial
+
+doc.setFont(
+  "helvetica",
+  "bold"
+);
+
+doc.setFontSize(7.5);
+
+doc.setTextColor(
+  80,
+  95,
+  112
+);
+
+doc.text(
+  `Serial: ${
+    equipo.serial ||
+    "No registrado"
+  }`,
+  margen + 5,
+  y + 21
+);
+
+// Técnico
+
+doc.setFont(
+  "helvetica",
+  "normal"
+);
+
+doc.text(
+  `Técnico: ${
+    equipo.tecnico ||
+    "No registrado"
+  }`,
+  margen + 80,
+  y + 21
+);
+
+// Estado
+
+doc.setFont(
+  "helvetica",
+  "bold"
+);
+
+doc.setFontSize(8.5);
+
+if (
+  diagnostico.estadoFinal ===
+  "Operativo con observaciones"
+) {
+  doc.setTextColor(
     180,
-    17,
-    2,
-    2,
-    "F"
-  );
-
-  doc.setFont(
-    "helvetica",
-    "bold"
-  );
-
-  doc.setFontSize(10);
-
-  doc.setTextColor(
-    16,
-    41,
-    75
-  );
-
-  doc.text(
-    equipo.modelo || "Equipo",
-    margen + 4,
-    y + 6
-  );
-
-  doc.setFont(
-    "helvetica",
-    "normal"
-  );
-
-  doc.setFontSize(8);
-
-  doc.setTextColor(
-    110,
     120,
-    135
+    25
   );
-
-  doc.text(
-    `SN: ${
-      equipo.serial ||
-      "No registrado"
-    }`,
-    margen + 4,
-    y + 12
+} else if (
+  diagnostico.estadoFinal ===
+  "Requiere reparación"
+) {
+  doc.setTextColor(
+    180,
+    75,
+    45
   );
-
-  // Estado del equipo
-
-  doc.setFont(
-    "helvetica",
-    "bold"
+} else if (
+  diagnostico.estadoFinal ===
+  "Fuera de servicio"
+) {
+  doc.setTextColor(
+    160,
+    55,
+    55
   );
+} else {
+  doc.setTextColor(
+    8,
+    124,
+    103
+  );
+}
 
-  doc.setFontSize(8.5);
-
-  if (
-    diagnostico.estadoFinal ===
-    "Operativo con observaciones"
-  ) {
-    doc.setTextColor(
-      180,
-      120,
-      25
-    );
-  } else {
-    doc.setTextColor(
-      166,
-      66,
-      66
-    );
+doc.text(
+  diagnostico.estadoFinal ||
+    "Estado no definido",
+  anchoPagina - margen - 5,
+  y + 8,
+  {
+    align: "right",
   }
+);
 
-  doc.text(
-    diagnostico.estadoFinal ||
-      "",
-    anchoPagina - margen - 4,
-    y + 9,
-    {
-      align: "right",
-    }
-  );
-
-  y += 25;
+y += 38;
 
   // -------------------------------------
   // DIAGNÓSTICO
   // -------------------------------------
+doc.setFont(
+  "helvetica",
+  "bold"
+);
 
-  if (diagnostico.diagnostico) {
-    y = agregarCampo(
-      doc,
-      "Diagnóstico",
-      diagnostico.diagnostico,
-      y,
-      orden
-    );
-  }
+doc.setFontSize(10);
+
+doc.setTextColor(
+  16,
+  41,
+  75
+);
+
+doc.text(
+  "Diagnóstico técnico",
+  margen,
+  y
+);
+
+doc.setDrawColor(
+  225,
+  230,
+  236
+);
+
+doc.line(
+  margen,
+  y + 3,
+  anchoPagina - margen,
+  y + 3
+);
+
+y += 11;
 
   if (
     diagnostico.fallaDetectada
