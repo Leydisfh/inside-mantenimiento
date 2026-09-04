@@ -299,7 +299,7 @@ function ResumenOrden({
 {ordenCompleta && (
 <button
   type="button"
-  className="generate-report-button"
+  className="review-order-button"
   onClick={generarInforme}
 >
   Generar informe y cerrar orden

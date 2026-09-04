@@ -254,15 +254,7 @@ const agregarEvidenciasPDF = async (
     evidencias.filter(
       (item) => item.evidencia
     );
-    console.log(
-  "EVIDENCIAS RECIBIDAS POR EL PDF:",
-  evidencias
-);
 
-console.log(
-  "EVIDENCIAS VALIDAS:",
-  evidenciasValidas
-);
 
   if (
     evidenciasValidas.length === 0
@@ -526,14 +518,6 @@ export const generarInformePDF = async (
     ].includes(
       equipo.diagnostico?.estadoFinal
     )
-);console.log(
-  "EQUIPOS QUE IRÁN A PÁGINAS DE ATENCIÓN:",
-  atencion.map((equipo) => ({
-    modelo: equipo.modelo,
-    serial: equipo.serial,
-    estado:
-      equipo.diagnostico?.estadoFinal,
-  }))
 );
   
  let y = 18;

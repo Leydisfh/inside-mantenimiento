@@ -11,7 +11,7 @@ import NuevaOrden from "./pages/NuevaOrden";
 import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
 import DetalleEquipo from "./pages/DetalleEquipo";
 import ResumenOrden from "./pages/ResumenOrden";
-import VistaPreviaInforme from "./pages/VistaPreviaInforme";
+
 
 
 
@@ -1380,30 +1380,7 @@ const verEquipoDesdeResumen = (equipo) => {
   setOrigenDetalle("resumenOrden");
   setPantalla("detalleEquipo");
 };
-const abrirVistaPreviaInforme = () => {
-  console.log("ABRIENDO VISTA PREVIA");
 
-  const todosCompletados =
-    equipos.length > 0 &&
-    equipos.every(
-      (equipo) =>
-        equipo.estado === "Completado"
-    );
-
-  console.log(
-    "TODOS COMPLETADOS:",
-    todosCompletados
-  );
-
-  if (!todosCompletados) {
-    alert(
-      "Todos los equipos deben estar completados antes de preparar el informe."
-    );
-    return;
-  }
-
-  setPantalla("vistaPreviaInforme");
-};
 const generarInformeYCerrarOrden = async (
   equiposOrden
 ) => {
@@ -1551,21 +1528,7 @@ if (verificandoSesion) {
       </main>
     </div>
   );
-}
-if (
-  pantalla === "vistaPreviaInforme" &&
-  ordenSeleccionada
-) {
-  return (
-    <VistaPreviaInforme
-      orden={ordenSeleccionada}
-      equipos={equipos}
-      volver={() =>
-        setPantalla("resumenOrden")
-      }
-      cerrarOrden={cerrarOrdenServicio}
-    />
-  );
+
 }
 
 
@@ -1647,7 +1610,6 @@ if (
         setPantalla("equipos")
       }
       verEquipo={verEquipoDesdeResumen}
-      generarInforme={abrirVistaPreviaInforme}
     />
   );
 } 
