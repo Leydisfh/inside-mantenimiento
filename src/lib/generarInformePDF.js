@@ -304,12 +304,12 @@ console.log(
   for (
     let i = 0;
     i < evidenciasValidas.length;
-    i += 2
+    i += 3
   ) {
     const fila =
       evidenciasValidas.slice(
         i,
-        i + 2
+        i + 3
       );
 
     const preparadas =
@@ -336,7 +336,7 @@ console.log(
     y = asegurarEspacio(
       doc,
       y,
-      58,
+      48,
       orden
     );
 
@@ -350,7 +350,7 @@ console.log(
 
       const x =
         margen +
-        columna * 90;
+        columna * 65;
 
       doc.setFont(
         "helvetica",
@@ -462,36 +462,7 @@ export const generarInformePDF = async (
     ...reparacion,
     ...conObservaciones,
   ];
-  console.log(
-  "TOTAL EQUIPOS:",
-  equipos.length
-);
-
-console.log(
-  "OPERATIVOS:",
-  operativos.length
-);
-
-console.log(
-  "CON OBSERVACIONES:",
-  conObservaciones.length
-);
-
-console.log(
-  "REQUIEREN REPARACION:",
-  reparacion.length
-);
-
-console.log(
-  "FUERA DE SERVICIO:",
-  fueraServicio.length
-);
-
-console.log(
-  "EQUIPOS DE ATENCION:",
-  atencion
-);
-
+  
  let y = 18;
 
 // =====================================
@@ -917,7 +888,7 @@ y += 32;
         y
       );
 
-      y += 6;
+      y += 8;
 
       for (
         const [prueba] of fallas
