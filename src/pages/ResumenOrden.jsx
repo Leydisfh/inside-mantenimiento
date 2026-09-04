@@ -297,13 +297,13 @@ function ResumenOrden({
           )}
         </section>
 {ordenCompleta && (
-  <button
-    type="button"
-    className="generate-report-button"
-    onClick={generarInforme}
-  >
-    Preparar informe
-  </button>
+<button
+  type="button"
+  className="generate-report-button"
+  onClick={generarInforme}
+>
+  Generar informe y cerrar orden
+</button>
 )}
 {!ordenCompleta && (
   <div className="report-disabled-message">

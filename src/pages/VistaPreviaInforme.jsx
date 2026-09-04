@@ -7,7 +7,7 @@ function VistaPreviaInforme({
   orden,
   equipos,
   volver,
-  
+  cerrarOrden,
 }) {
   const completados = equipos.filter(
     (equipo) => equipo.estado === "Completado"
@@ -292,6 +292,13 @@ const descargarPDF = async (e) => {
   {generandoPDF
     ? "Generando PDF..."
     : "Generar PDF"}
+</button>
+<button
+  type="button"
+  className="generate-report-button"
+  onClick={cerrarOrden}
+>
+  Cerrar orden
 </button>
 
       </main>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
+import { generarInformePDF } from "./lib/generarInformePDF";
 import "./App.css";
 import Login from "./pages/Login";
 import Ordenes from "./pages/Ordenes";
@@ -11,6 +12,7 @@ import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
 import DetalleEquipo from "./pages/DetalleEquipo";
 import ResumenOrden from "./pages/ResumenOrden";
 import VistaPreviaInforme from "./pages/VistaPreviaInforme";
+
 
 
 
@@ -1402,6 +1404,84 @@ const abrirVistaPreviaInforme = () => {
 
   setPantalla("vistaPreviaInforme");
 };
+const generarInformeYCerrarOrden = async (
+  equiposOrden
+) => {
+  if (!ordenSeleccionada) return;
+
+  if (
+    !equiposOrden ||
+    equiposOrden.length === 0
+  ) {
+    alert(
+      "No se encontraron equipos para generar el informe."
+    );
+    return;
+  }
+
+  const confirmar = window.confirm(
+    `¿Deseas generar el informe y cerrar la orden ${ordenSeleccionada.numero}?`
+  );
+
+  if (!confirmar) return;
+
+  try {
+    // 1. Generar PDF
+    await generarInformePDF(
+      ordenSeleccionada,
+      equiposOrden
+    );
+
+    // 2. Cerrar orden
+    const fechaCierre =
+      new Date().toISOString();
+
+    const { error } = await supabase
+      .from("ordenes")
+      .update({
+        estado: "Cerrada",
+        cerrada_at: fechaCierre,
+      })
+      .eq(
+        "id",
+        ordenSeleccionada.id
+      );
+
+    if (error) {
+      throw error;
+    }
+
+    // 3. Actualizar estado local
+    setOrdenes((actuales) =>
+      actuales.map((orden) =>
+        orden.id ===
+        ordenSeleccionada.id
+          ? {
+              ...orden,
+              estado: "Cerrada",
+              cerradaAt: fechaCierre,
+            }
+          : orden
+      )
+    );
+
+    alert(
+      "Informe generado y orden cerrada correctamente."
+    );
+
+    setOrdenSeleccionada(null);
+    setPantalla("ordenes");
+  } catch (error) {
+    console.error(
+      "ERROR GENERANDO INFORME O CERRANDO ORDEN:",
+      error
+    );
+
+    alert(
+      "No fue posible completar el proceso."
+    );
+  }
+};
  {
   if (
   pantalla === "resumenOrden" &&
@@ -1409,14 +1489,20 @@ const abrirVistaPreviaInforme = () => {
 ) {
   return (
     <ResumenOrden
-      orden={ordenSeleccionada}
-      equipos={equipos}
-      volver={() =>
-        setPantalla("equipos")
-      }
-      verEquipo={verEquipoDesdeResumen}
-      generarInforme={abrirVistaPreviaInforme}
-    />
+  orden={ordenSeleccionada}
+  equipos={equipos}
+  volver={() =>
+    setPantalla("equipos")
+  }
+  verEquipo={
+    verEquipoDesdeResumen
+  }
+generarInforme={() =>
+  generarInformeYCerrarOrden(
+    equipos
+  )
+}
+/>
   );
 }if (
   pantalla === "detalleEquipo" &&
@@ -1477,9 +1563,11 @@ if (
       volver={() =>
         setPantalla("resumenOrden")
       }
+      cerrarOrden={cerrarOrdenServicio}
     />
   );
 }
+
 
 if (pantalla === "nuevaOrden") {
   return (
