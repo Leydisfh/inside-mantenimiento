@@ -11,7 +11,7 @@ function ResumenOrden({
   orden?.estado === "Cerrada";
   {ordenCerrada && (
   <div className="closed-order-notice">
-    Orden cerrada · Solo consulta
+    Orden cerrada
   </div>
 )}
   const total = equipos.length;
@@ -307,7 +307,7 @@ function ResumenOrden({
 {ordenCompleta && !ordenCerrada && (
   <button
     type="button"
-    className="generate-report-button"
+    className="new-order-button"
     onClick={generarInforme}
   >
     Generar informe y cerrar orden

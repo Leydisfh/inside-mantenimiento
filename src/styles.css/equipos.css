@@ -6,7 +6,7 @@
 .equipment-header {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 25px;
   margin-bottom: 22px;
 }
 
@@ -23,7 +23,7 @@
 .equipment-header strong {
   display: block;
   color: #10294b;
-  font-size: 17px;
+  font-size: 15px;
 }
 
 .equipment-header span {

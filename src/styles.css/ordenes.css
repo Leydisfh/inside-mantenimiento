@@ -153,6 +153,11 @@
   background: #e8f7f2;
   color: #087c67;
 }
+.closed-order-notice{
+  font-size: 14px;
+  font-weight: bold;
+  color: #0b63e5;
+}
 
 .order-details {
   display: flex;

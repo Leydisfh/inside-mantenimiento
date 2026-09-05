@@ -90,7 +90,7 @@ const listaParaCerrar =
           </button>
             {ordenCerrada && (
               <div className="closed-order-notice">
-                Orden cerrada·
+                Orden cerrada
               </div>
 )}    
           <div>
