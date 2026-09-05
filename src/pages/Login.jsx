@@ -69,7 +69,7 @@ export function Login({
 
               <input
                 type="text"
-                placeholder="Ej. Jaime"
+                placeholder="Ej. Luis"
                 value={nombreTecnico}
                 onChange={(e) =>
                   setNombreTecnico(e.target.value)

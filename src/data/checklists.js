@@ -1,22 +1,10 @@
 export const checklistsPorCategoria = {
-  "Terminal móvil": [
-    {
-      grupo: "Inspección y limpieza",
-      items: [
-        "Limpieza de teclado y botones",
-        "Limpieza de pantalla",
-        "Limpieza de gatillo",
-        "Limpieza de ventana del scanner",
-        "Limpieza del compartimiento de batería",
-        "Limpieza de contactos de carga",
-        "Inspección de carcasa",
-        "Limpieza exterior",
-      ],
-    },
+  "Terminal móvil": [ 
     {
       grupo: "Pruebas funcionales",
       items: [
         "Encendido correcto",
+        "Sistema inicia sin errores",
         "Pantalla",
         "Touch",
         "Teclado y botones",
@@ -27,13 +15,42 @@ export const checklistsPorCategoria = {
         "Batería",
         "Carga en cradle",
         "Reinicio correcto",
-        "Sistema inicia sin errores",
+      ],
+    },
+     {
+      grupo: "Inspección y limpieza",
+      items: [
+        "Limpieza de contactos de carga",
+        "Limpieza del compartimiento de batería",
+        "Limpieza de ventana del scanner",
+        "Limpieza de teclado y botones",
+        "Limpieza de pantalla",
+        "Limpieza de gatillo",
+        "Inspección de carcasa",
+        "Limpieza exterior",
       ],
     },
   ],
 
   Impresora: [
     {
+      grupo: "Pruebas funcionales",
+      items: [
+        "Encendido correcto",
+        "Errores o alertas",
+        "Pantalla y controles",
+        "Detección del medio",
+        "Detección de ribbon",
+        "Feed",
+        "Calibración",
+        "Impresión de prueba",
+        "Calidad de impresión",
+        "Alineación",
+        "Conectividad",
+        "Sensores",
+      ],
+    },
+     {
       grupo: "Inspección y limpieza",
       items: [
         "Limpieza interior",
@@ -47,37 +64,9 @@ export const checklistsPorCategoria = {
         "Limpieza exterior",
       ],
     },
-    {
-      grupo: "Pruebas funcionales",
-      items: [
-        "Encendido correcto",
-        "Pantalla y controles",
-        "Detección del medio",
-        "Detección de ribbon",
-        "Feed",
-        "Calibración",
-        "Impresión de prueba",
-        "Calidad de impresión",
-        "Alineación",
-        "Conectividad",
-        "Sensores",
-        "Errores o alertas",
-      ],
-    },
   ],
 
   Scanner: [
-    {
-      grupo: "Inspección y limpieza",
-      items: [
-        "Limpieza de ventana de lectura",
-        "Limpieza de gatillo",
-        "Limpieza de contactos",
-        "Inspección de carcasa",
-        "Inspección de cable o conector",
-        "Limpieza exterior",
-      ],
-    },
     {
       grupo: "Pruebas funcionales",
       items: [
@@ -91,19 +80,21 @@ export const checklistsPorCategoria = {
         "Alertas sonoras",
       ],
     },
-  ],
-
-  RFID: [
-    {
+     {
       grupo: "Inspección y limpieza",
       items: [
+        "Limpieza de ventana de lectura",
+        "Limpieza de gatillo",
         "Limpieza de contactos",
-        "Inspección de gatillo",
         "Inspección de carcasa",
-        "Inspección de batería",
+        "Inspección de cable o conector",
         "Limpieza exterior",
       ],
     },
+  ],
+
+  RFID: [
+   
     {
       grupo: "Pruebas funcionales",
       items: [
@@ -119,20 +110,19 @@ export const checklistsPorCategoria = {
         "Indicadores LED",
       ],
     },
-  ],
-
-  Cradle: [
-    {
+     {
       grupo: "Inspección y limpieza",
       items: [
-        "Limpieza de slots",
         "Limpieza de contactos",
-        "Inspección de fuente de alimentación",
-        "Inspección de cableado",
-        "Inspección física",
+        "Inspección de gatillo",
+        "Inspección de carcasa",
+        "Inspección de batería",
         "Limpieza exterior",
       ],
     },
+  ],
+
+  Cradle: [
     {
       grupo: "Pruebas funcionales",
       items: [
@@ -143,6 +133,17 @@ export const checklistsPorCategoria = {
         "Indicadores LED",
         "Prueba de todos los slots",
         "Carga simultánea",
+      ],
+    },
+     {
+      grupo: "Inspección y limpieza",
+      items: [
+        "Limpieza de slots",
+        "Limpieza de contactos",
+        "Inspección de fuente de alimentación",
+        "Inspección de cableado",
+        "Inspección física",
+        "Limpieza exterior",
       ],
     },
   ],
