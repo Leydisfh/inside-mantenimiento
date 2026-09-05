@@ -3,14 +3,14 @@ export const checklistsPorCategoria = {
     {
       grupo: "Inspección y limpieza",
       items: [
-        "Limpieza exterior",
-        "Limpieza de pantalla",
         "Limpieza de teclado y botones",
+        "Limpieza de pantalla",
         "Limpieza de gatillo",
         "Limpieza de ventana del scanner",
         "Limpieza del compartimiento de batería",
         "Limpieza de contactos de carga",
         "Inspección de carcasa",
+        "Limpieza exterior",
       ],
     },
     {
@@ -36,7 +36,6 @@ export const checklistsPorCategoria = {
     {
       grupo: "Inspección y limpieza",
       items: [
-        "Limpieza exterior",
         "Limpieza interior",
         "Limpieza de cabezal",
         "Limpieza de platen roller",
@@ -45,6 +44,7 @@ export const checklistsPorCategoria = {
         "Inspección de cabezal",
         "Inspección de rodillos",
         "Inspección de carcasa y mecanismos",
+        "Limpieza exterior",
       ],
     },
     {
@@ -70,12 +70,12 @@ export const checklistsPorCategoria = {
     {
       grupo: "Inspección y limpieza",
       items: [
-        "Limpieza exterior",
         "Limpieza de ventana de lectura",
         "Limpieza de gatillo",
         "Limpieza de contactos",
         "Inspección de carcasa",
         "Inspección de cable o conector",
+        "Limpieza exterior",
       ],
     },
     {
@@ -97,11 +97,11 @@ export const checklistsPorCategoria = {
     {
       grupo: "Inspección y limpieza",
       items: [
-        "Limpieza exterior",
         "Limpieza de contactos",
         "Inspección de gatillo",
         "Inspección de carcasa",
         "Inspección de batería",
+        "Limpieza exterior",
       ],
     },
     {
@@ -125,12 +125,12 @@ export const checklistsPorCategoria = {
     {
       grupo: "Inspección y limpieza",
       items: [
-        "Limpieza exterior",
         "Limpieza de slots",
         "Limpieza de contactos",
         "Inspección de fuente de alimentación",
         "Inspección de cableado",
         "Inspección física",
+        "Limpieza exterior",
       ],
     },
     {
@@ -151,10 +151,10 @@ export const checklistsPorCategoria = {
     {
       grupo: "Inspección general",
       items: [
-        "Limpieza exterior",
         "Inspección física",
         "Conectores",
         "Cableado",
+        "Limpieza exterior",
       ],
     },
     {
