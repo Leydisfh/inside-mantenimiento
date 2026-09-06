@@ -79,15 +79,13 @@ export function Login({
           )}
 
           <div className="field">
-            <label>Ingrese PIN</label>
-
-            <input
-              type="password"
-              inputMode="numeric"
-              placeholder="••••"
-              value={pin}
-              onChange={(e) => setPin(e.target.value)}
-            />
+            <label>Ingrese contraseña</label>
+              <input
+                type="password"
+                value={pin}
+                onChange={(e) => setPin(e.target.value)}
+                placeholder="Contraseña"
+              />
           </div>
 
           <button
