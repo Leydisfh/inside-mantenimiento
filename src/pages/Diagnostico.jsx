@@ -7,9 +7,6 @@ function Diagnostico({
   guardarDiagnostico,
 }) {
   const [estadoFinal, setEstadoFinal] = useState("");
-  const [diagnostico, setDiagnostico] = useState("");
-  const [fallaDetectada, setFallaDetectada] = useState("");
-  const [repuesto, setRepuesto] = useState("");
   const [recomendacion, setRecomendacion] = useState("");
   const [prioridad, setPrioridad] = useState("Baja");
 
@@ -19,16 +16,9 @@ function Diagnostico({
       return;
     }
 
-    if (!diagnostico.trim()) {
-      alert("Escribe el diagnóstico del equipo.");
-      return;
-    }
 
     const datos = {
       estadoFinal,
-      diagnostico,
-      fallaDetectada,
-      repuesto,
       recomendacion,
       prioridad,
       tecnico: nombreTecnico || "Administrador",
@@ -153,44 +143,7 @@ function Diagnostico({
         <section className="diagnosis-section">
 
           <div className="diagnosis-field">
-            <label>Diagnóstico *</label>
-
-            <textarea
-              placeholder="Describe el estado general del equipo..."
-              value={diagnostico}
-              onChange={(e) =>
-                setDiagnostico(e.target.value)
-              }
-            />
-          </div>
-
-          <div className="diagnosis-field">
-            <label>Falla detectada</label>
-
-            <textarea
-              placeholder="Describe la falla encontrada, si aplica."
-              value={fallaDetectada}
-              onChange={(e) =>
-                setFallaDetectada(e.target.value)
-              }
-            />
-          </div>
-
-          <div className="diagnosis-field">
-            <label>Repuesto necesario</label>
-
-            <input
-              type="text"
-              placeholder="Ej. Batería, pantalla, gatillo..."
-              value={repuesto}
-              onChange={(e) =>
-                setRepuesto(e.target.value)
-              }
-            />
-          </div>
-
-          <div className="diagnosis-field">
-            <label>Recomendación técnica</label>
+            <label>Diagnóstico y recomendación técnica</label>
 
             <textarea
               placeholder="Indica las acciones recomendadas."
