@@ -120,11 +120,12 @@ const cargarDatosDesdeSupabase = async () => {
         .select("*"),
 
       supabase
-        .from("ordenes")
+        .from("ordenes") 
         .select("*")
         .order("created_at", {
           ascending: false,
         }),
+        
 
       supabase
         .from("equipos")
