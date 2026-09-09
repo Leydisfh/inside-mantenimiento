@@ -78,6 +78,7 @@ function AgregarEquipoOrden({
               }
             >
               <option>Terminal móvil</option>
+              <option>PDA</option>
               <option>Impresora</option>
               <option>Scanner</option>
               <option>RFID</option>
