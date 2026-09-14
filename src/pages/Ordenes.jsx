@@ -9,6 +9,7 @@ export function Ordenes({
   cerrarSesion,
   abrirOrden,
   nuevaOrden,
+  abrirTecnicos,
 }) {
   const [vistaOrdenes, setVistaOrdenes] =
     useState("abiertas");
@@ -78,6 +79,15 @@ export function Ordenes({
             Salir
           </button>
         </header>
+        {tipoAcceso === "administrador" && (
+  <button
+    type="button"
+    className="manage-technicians-button"
+    onClick={abrirTecnicos}
+  >
+    Gestionar técnicos
+  </button>
+)}
 
         <section className="orders-title">
           <h1>
@@ -141,6 +151,7 @@ export function Ordenes({
             Cerradas
           </button>
         </div>
+        
 
         {tipoAcceso ===
           "administrador" && (

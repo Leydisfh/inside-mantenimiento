@@ -11,16 +11,17 @@ import NuevaOrden from "./pages/NuevaOrden";
 import AgregarEquipoOrden from "./pages/AgregarEquipoOrden";
 import DetalleEquipo from "./pages/DetalleEquipo";
 import ResumenOrden from "./pages/ResumenOrden";
-
-
+import Tecnicos from "./pages/Tecnicos";
 
 
 
 function App() {
   const [pantalla, setPantalla] = useState("login");
+  const [usuarioTecnico, setUsuarioTecnico] = useState("");
   const [tipoAcceso, setTipoAcceso] = useState("tecnico");
   const [pin, setPin] = useState("");
   const [nombreTecnico, setNombreTecnico] = useState("");
+  const [tecnicos, setTecnicos] = useState([]);
   const [ordenSeleccionada, setOrdenSeleccionada] = useState(null);
   const [equipoSeleccionado, setEquipoSeleccionado] = useState(null);
   const [checklistActual, setChecklistActual] = useState(null);
@@ -343,6 +344,74 @@ const cargarDatosDesdeSupabase = async () => {
     return false;
   }
 };
+const cargarTecnicos = async () => {
+  const { data, error } = await supabase
+    .from("perfiles")
+    .select("id, nombre, correo, activo, rol")
+    .eq("rol", "tecnico")
+    .order("nombre");
+
+
+  if (error) {
+    alert(
+      "No fue posible cargar los técnicos."
+    );
+    return;
+  }
+
+  setTecnicos(data || []);
+};
+const cambiarEstadoTecnico = async (
+  tecnico
+) => {
+  const nuevoEstado = !tecnico.activo;
+
+  const confirmar = window.confirm(
+    nuevoEstado
+      ? `¿Habilitar el acceso de ${tecnico.nombre}?`
+      : `¿Bloquear el acceso de ${tecnico.nombre}?`
+  );
+
+  if (!confirmar) return;
+
+  const { error } = await supabase
+    .from("perfiles")
+    .update({
+      activo: nuevoEstado,
+    })
+    .eq("id", tecnico.id)
+    .eq("rol", "tecnico");
+
+  if (error) {
+    console.error(
+      "ERROR CAMBIANDO ESTADO DEL TÉCNICO:",
+      error
+    );
+
+    alert(
+      "No fue posible actualizar el acceso."
+    );
+
+    return;
+  }
+
+  setTecnicos((actuales) =>
+    actuales.map((item) =>
+      item.id === tecnico.id
+        ? {
+            ...item,
+            activo: nuevoEstado,
+          }
+        : item
+    )
+  );
+};
+    // Gestion de Tecnicos
+const abrirGestionTecnicos =
+  async () => {
+    await cargarTecnicos();
+    setPantalla("tecnicos");
+  };
 
   const ingresar = async () => {
   if (!pin.trim()) {
@@ -350,18 +419,18 @@ const cargarDatosDesdeSupabase = async () => {
     return;
   }
 
-  if (
-    tipoAcceso === "tecnico" &&
-    !nombreTecnico.trim()
-  ) {
-    alert("Ingresa el nombre del técnico.");
-    return;
-  }
+if (
+  tipoAcceso === "tecnico" &&
+  !usuarioTecnico.trim()
+) {
+  alert("Ingresa tu usuario.");
+  return;
+}
 
-  const email =
-    tipoAcceso === "administrador"
-      ? "insidepanama@zohomail.com"
-      : "soporte-inside@zohomail.com";
+const email =
+  tipoAcceso === "administrador"
+    ? "insidepanama@zohomail.com"
+    : `${usuarioTecnico.trim().toLowerCase()}@inside.local`;
 
   const { data, error } =
     await supabase.auth.signInWithPassword({
@@ -388,14 +457,14 @@ const cargarDatosDesdeSupabase = async () => {
     return;
   }
 
-  const {
-    data: perfil,
-    error: errorPerfil,
-  } = await supabase
-    .from("perfiles")
-    .select("rol, activo")
-    .eq("id", userId)
-    .single();
+ const {
+  data: perfil,
+  error: errorPerfil,
+} = await supabase
+  .from("perfiles")
+  .select("rol, activo, nombre, correo")
+  .eq("id", data.user.id)
+  .single();
 
   if (errorPerfil || !perfil) {
     console.error(
@@ -421,6 +490,19 @@ const cargarDatosDesdeSupabase = async () => {
 
     return;
   }
+  if (tipoAcceso === "tecnico") {
+  const nombreDelTecnico =
+    perfil.nombre || "Técnico";
+
+  setNombreTecnico(
+    nombreDelTecnico
+  );
+
+  localStorage.setItem(
+    "inside_nombre_tecnico",
+    nombreDelTecnico
+  );
+}
 
   if (perfil.rol !== tipoAcceso) {
     await supabase.auth.signOut();
@@ -431,6 +513,10 @@ const cargarDatosDesdeSupabase = async () => {
 
     return;
   }
+  if (tipoAcceso === "administrador") {
+  await cargarTecnicos();
+  
+}
 
   const datosCargados =
   await cargarDatosDesdeSupabase();
@@ -580,10 +666,91 @@ useEffect(() => {
   restaurarSesion();
 }, []);
 
-  const cerrarSesion = () => {
-    setPantalla("login");
-    setPin("");
+useEffect(() => {
+  let intervalo;
+
+  const verificarAccesoTecnico = async () => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user) {
+      return;
+    }
+
+    const { data: perfil, error } =
+      await supabase
+        .from("perfiles")
+        .select("rol, activo")
+        .eq("id", session.user.id)
+        .maybeSingle();
+
+    if (error) {
+      console.error(
+        "ERROR VERIFICANDO ACCESO:",
+        error
+      );
+      return;
+    }
+
+    if (
+      perfil?.rol === "tecnico" &&
+      perfil?.activo === false
+    ) {
+      await supabase.auth.signOut();
+
+      setPantalla("login");
+      setPin("");
+      setUsuarioTecnico("");
+      setNombreTecnico("");
+
+      localStorage.removeItem(
+        "inside_nombre_tecnico"
+      );
+
+      alert(
+        "Tu acceso al sistema ha sido deshabilitado."
+      );
+    }
   };
+
+  // Revisar al abrir la aplicación
+  verificarAccesoTecnico();
+
+  // Revisar cada 30 segundos
+  intervalo = setInterval(
+    verificarAccesoTecnico,
+    30000
+  );
+
+  // Revisar inmediatamente cuando vuelve a la app
+  window.addEventListener(
+    "focus",
+    verificarAccesoTecnico
+  );
+
+  return () => {
+    clearInterval(intervalo);
+
+    window.removeEventListener(
+      "focus",
+      verificarAccesoTecnico
+    );
+  };
+}, []);
+
+  const cerrarSesion = async () => {
+  await supabase.auth.signOut();
+
+  setPantalla("login");
+  setPin("");
+  setUsuarioTecnico("");
+  setNombreTecnico("");
+
+  localStorage.removeItem(
+    "inside_nombre_tecnico"
+  );
+};
 
   const abrirOrden = (orden) => {
     if (orden.estado === "Cerrado") {
@@ -1251,6 +1418,7 @@ const agregarEquiposAOrden = async ({
       numerosExistentes.length > 0
         ? Math.max(...numerosExistentes)
         : 0;
+        
 
     /*
       3. Preparar equipos nuevos
@@ -1504,6 +1672,7 @@ const generarInformeYCerrarOrden = async (
     
   }
   
+  
 };
 const generarInformeOrdenCerrada = async (
   equiposOrden
@@ -1536,6 +1705,7 @@ const generarInformeOrdenCerrada = async (
     );
   }
 };
+//Inicio de if de pantalla
  {
   if (
   pantalla === "resumenOrden" &&
@@ -1564,10 +1734,7 @@ generarInformeCerrado={() =>
 }
 />
   );
-}if (
-  pantalla === "detalleEquipo" &&
-  equipoSeleccionado
-) {
+}if ( pantalla === "detalleEquipo" && equipoSeleccionado) {
   return (
     <DetalleEquipo
       equipo={equipoSeleccionado}
@@ -1579,10 +1746,7 @@ generarInformeCerrado={() =>
   );
 }
 }
-if (
-  pantalla === "agregarEquipoOrden" &&
-  ordenSeleccionada
-) {
+if (pantalla === "agregarEquipoOrden" && ordenSeleccionada) {
   return (
     <AgregarEquipoOrden
       orden={ordenSeleccionada}
@@ -1706,9 +1870,29 @@ if (
         cerrarSesion={cerrarSesion}
         abrirOrden={abrirOrden}
         nuevaOrden={() => setPantalla("nuevaOrden")}
+        tecnicos={tecnicos}
+        cambiarEstadoTecnico={cambiarEstadoTecnico}
+        
+        abrirTecnicos={abrirGestionTecnicos}
       />
     );
   }
+  if (
+  pantalla === "tecnicos" &&
+  tipoAcceso === "administrador"
+) {
+  return (
+    <Tecnicos
+      tecnicos={tecnicos}
+      cambiarEstadoTecnico={
+        cambiarEstadoTecnico
+      }
+      volver={() =>
+        setPantalla("ordenes")
+      }
+    />
+  );
+}
 
   return (
     <Login
@@ -1716,8 +1900,8 @@ if (
       setTipoAcceso={setTipoAcceso}
       pin={pin}
       setPin={setPin}
-      nombreTecnico={nombreTecnico}
-      setNombreTecnico={setNombreTecnico}
+      usuarioTecnico={usuarioTecnico}
+      setUsuarioTecnico={setUsuarioTecnico}
       ingresar={ingresar}
     />
   );

@@ -5,8 +5,8 @@ export function Login({
   setTipoAcceso,
   pin,
   setPin,
-  nombreTecnico,
-  setNombreTecnico,
+  usuarioTecnico,
+  setUsuarioTecnico,
   ingresar,
 }) {
   return (
@@ -63,22 +63,24 @@ export function Login({
 
         <section className="form-card">
 
-          {tipoAcceso === "tecnico" && (
-            <div className="field">
-              <label>Nombre del técnico</label>
-
-              <input
-                type="text"
-                placeholder="Ej. Luis"
-                value={nombreTecnico}
-                onChange={(e) =>
-                  setNombreTecnico(e.target.value)
-                }
-              />
-            </div>
-          )}
+   
 
           <div className="field">
+                  {tipoAcceso === "tecnico" && (
+  <>
+    <label>Usuario</label>
+
+    <input
+      type="text"
+      value={usuarioTecnico}
+      onChange={(e) =>
+        setUsuarioTecnico(e.target.value)
+      }
+      placeholder="Ej. jose"
+      autoComplete="username"
+    />
+  </>
+)}
             <label>Ingrese contraseña</label>
               <input
                 type="password"
